@@ -72,7 +72,7 @@ SA.site.means <- ddply(.data=SA.plot.means,
                           site_SE= round(stder(plot_mean), digits= 3)
                        )
 
-SA.site.means <- rename(SA.site.means, replace=c(site_Mean = "Mean Accretion Rate mm/yr", site_SE = "SE of mean Accrretion mm/yr"))
+SA.site.means <- rename(SA.site.means, replace=c(site_Mean = "Mean_Accretion_Rate", site_SE = "SE of mean Accrretion mm/yr"))
 
 
 write.xlsx(x= SA.site.means, file="reports/SArates.xls")
