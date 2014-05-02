@@ -24,7 +24,7 @@
 # Create a function that checks to see if there's enough data to calculate a linear regression, 
 # and then regresses pin height across time (as decimal year) 
 slopeer <- function(d) {
-  if(nrow(d) < 2) {return(data.frame(intercept = NA, slope = NA)) # if number of rows (data points) is less than 2 return NA's
+  if(nrow(d) < 3) {return(data.frame(intercept = NA, slope = NA)) # if number of rows (data points) is less than 3 return NA's
   } else {                                                        # if there's enough data take data = d (which will be subsetted in later functions) then...
     p <-  coef(lm(Raw ~ DecYear, data = d))                       # regress the pin heigh against time (decimal years) and return the coefficients of the regression- slope and intercept
     p <- data.frame(slope = round(p[2], digits= 4))               # subset out just the slope coefficient from the object p 
@@ -34,8 +34,14 @@ slopeer <- function(d) {
 #*************************************************************
 # 1.)
 # Calculate slope using function slopeer created above ----
-# Outputs only Position_ID-Pin#-Location_ID-slope
-meanslope.Pin <- ddply(SET.data.M, .(SET_Type, Site_Name, Position_ID, Stratafication, variable, Location_ID), slopeer)
+# 
+meanslope.Pin <- ddply(SET.data.M, .(SET_Type, 
+                                     Site_Name, 
+                                     Plot_Name,
+                                     Position_ID, 
+                                     Stratafication, 
+                                     variable, 
+                                     Location_ID), slopeer)
 
 #dt <- join(x= meanslope.Pin, y= StudySites, by= "Location_ID")
 #*************************************************************
@@ -44,7 +50,12 @@ meanslope.Pin <- ddply(SET.data.M, .(SET_Type, Site_Name, Position_ID, Stratafic
 # (unique to site & station & SET arm position) by calculating mean slope and SE of slope means
 
 meanslope.Pos <- ddply(.data= meanslope.Pin, 
-                   .(SET_Type, Site_Name, Stratafication, Position_ID, Location_ID), # 
+                   .(SET_Type, 
+                     Site_Name,
+                     Plot_Name,
+                     Stratafication, 
+                     Position_ID, 
+                     Location_ID), 
                    summarize, 
                    meanslope= round(mean(slope,na.rm=TRUE),digits= 3), 
                    seSlope= round(sqrt(var(slope,na.rm=TRUE)/length(na.omit(slope))), digits= 3)) # can be replaced by stder function
@@ -54,15 +65,24 @@ meanslope.Pos <- ddply(.data= meanslope.Pin,
 # Calculate mean by Location_ID (Station) by averaging the mean slopes of each SET arm Position (which consists of mean pin slopes)
 # 
 meanslope.Loc <- ddply(.data= meanslope.Pos, 
-                       .(SET_Type, Site_Name, Stratafication, Location_ID), # Can I add "Location_ID here and have it simply carry through to the output? instead of joining below?
+                       .(SET_Type, 
+                         Site_Name,
+                         Plot_Name,
+                         Stratafication, 
+                         Location_ID), 
                        summarize, 
                        meanslopes= round(mean(meanslope,na.rm=TRUE),digits= 3), 
                        seSlope= round(sqrt(var(meanslope,na.rm=TRUE)/length(na.omit(meanslope))), digits= 3)) # can be replaced by stder function
 
-SET.station.means <- join(x= meanslope.Loc, y= StudySites, by= "Location_ID", type= "left")[, c(1:3, 6, 12, 15:20, 32)] #[section indexes the columns/variables wanted in the final dataframe]
+SET.station.means <- join(x= meanslope.Loc, 
+                          y= StudySites, 
+                          by= "Location_ID", 
+                          type= "left")[, c(1:4, 6:7, 19:24)] #[section indexes the columns/variables wanted in the final dataframe]
 
 SET.site.means <- ddply(.data= SET.station.means, 
-                       .(Site_Name, Stratafication), # Can I add "Location_ID here and have it simply carry through to the output? instead of joining below?
+                       .(Site_Name,
+                         Stratafication,
+                         SET_Type),
                        summarize, 
                        meanslope= round(mean(meanslopes,na.rm=TRUE),digits= 3), 
                        seSlope= round(sqrt(var(meanslopes,na.rm=TRUE)/length(na.omit(meanslopes))), digits= 3)) # can be replaced by stder function

@@ -4,7 +4,7 @@ require(reshape2)
 require(plyr)
 require(dplyr)
 
-SummaryTable <- join(SA.site.means, SET.site.means, by= c("Stratafication", "Site_Name"))
+SummaryTable <- join(SA.site.means, SET.site.means, by= c("Stratafication", "Site_Name", "SET_Type"))
 
 SummaryTable$SubSurface_change <- SummaryTable$Mean_elevation_change - SummaryTable$Mean_Accretion_Rate
 
