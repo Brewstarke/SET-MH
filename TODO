@@ -1,0 +1,21 @@
+Immediate Actions:
+
+
+
+Needs:
+-Add cast functions to post tables of site and station 'attributes' like number of positions measured etc.
+
+
+-Fix bug in /graphs/Plotting_Tool doPlot function
+
+-Add the database file path (SET.DB.path) to the report output to allow for tracking that the correct file was pulled in.
+
+-Adapt the munge and ID field creation to accomodate the shallow SETs
+  -strategy 1- subset and remove shallow stations to a new dataframe
+  -strategy 2- modify the ID field to add one layer on top of the stations
+
+-Need to enter GPS coords in database
+
+Wishes and Ideas:
+
+- Add a warning() message that lets user know if the numbers of levels in Position_ID is  not equal (!==) to Location_ID/4 asking to pick up if there's potentially missing data from a SET arm direction (or other)

@@ -1,0 +1,73 @@
+\documentclass{article}
+\usepackage[english]{babel}
+\begin{document}
+\title{Marsh Elevation Monitoring\\
+The Nature Conservancy, \\
+Long Island NY}
+\author{Nicole Maher \& Adam Starke}
+\maketitle\thispagestyle{empty}
+
+\section{Summary}
+
+<<Setup, include=FALSE, echo=FALSE>>=
+#setwd("SET-MH_Analysis")
+library(Hmisc)
+library(xtable)
+library(knitr)
+library(ggplot2)
+library(ggthemes)
+library(plyr)
+library(scales)
+load(".Rdata")
+# Pulls in scripts(chunks) for creating tables and figures used within this document. The scripts/chunks are id-ed by the "@"-CodeChunkName at the start of each script. The following chunks are used in the document.
+read_chunk('graphs/Tables.R')  #Table 1 and Table 2
+read_chunk('graphs/Plots_2.R') #SET Plot -Marsh Elevation Trends- LI sites
+read_chunk('graphs/SA_plots.R') #Surface Accretion plot
+read_chunk('graphs/ElevPlot1.R') #Elevation-Accretion plot 
+
+@
+
+
+The following is a quick compilation of the trends that have been measured at sites being monitored by TNC across Long Island. Note that data is not complete and still needs to be verified fully. The rate of the overall change in elevation is calcuated by finding the average change in each of 9 pins from the start of the monitoring period to the present. More directly, a linear regression is fit to the height of the pins through time. These lines are then averaged across stations for each site. 
+
+
+Tables:
+<<Tables, echo=FALSE, results='asis', fig.align='center', warning=FALSE>>=
+@
+
+
+
+\section{Visuals}
+What follows is a quick visual of the changes that have been measured along the marsh surfaces. The rate of the overall change in elevation is calcuated by finding the average change in each of 9 pins from the start of the monitoring period to the present. More directly, a linear regression is fit to the height of the pins through time. These lines are then averaged across stations for each site. 
+
+<<SA_Plots, echo=FALSE, results='asis',  warning=FALSE, message=FALSE, include=TRUE>>=
+@
+Plot 1: Surface Accretion trends through time at 7 of 9 study sites.
+<<Plot_multiLMs, echo=FALSE, results='asis', warning=FALSE, include=TRUE>>=
+SET.data.M$ID <- as.factor(SET.data.M$ID)
+
+# standardize characters in Stratafication
+SET.data.M$Stratafication <- as.character(SET.data.M$Stratafication)
+SET.data.M$Stratafication <- as.factor(capwords(SET.data.M$Stratafication))
+
+
+SET_Plot2 <- ggplot(data=SET.data.M, aes(y = change, x = Start_Date, colour=factor(SET.data.M$Stratafication))) 
+
+SET_Plot2 + 
+  theme_bw(base_family="serif") + 
+  geom_point(alpha= 0.05) +
+  facet_wrap(~ Site_Name) +
+  stat_smooth(method="lm", size = 1, alpha = .7) + 
+  labs(list(title = "Marsh Elevation Trends- TNC Long Island Sites", y = "Elevation Change (mm)", x = "Date")) +
+  ylim(-15,40) +
+   labs(colour = "Marsh Type") +
+  geom_path(by=SET.data.M$ID, alpha=.05)
+  
+
+@
+plot2: Elevation trends summary by marsh type -'NANA' have not been defined in database
+<<ElevPlot1, echo=FALSE, results='asis', fig.align='center', warning=FALSE, message=FALSE, include=TRUE>>=
+@
+
+
+\end{document}

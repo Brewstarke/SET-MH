@@ -1,0 +1,51 @@
+\documentclass{article}
+\usepackage[english]{babel}
+\begin{document}
+\title{Marsh Elevation Monitoring\\
+The Nature Conservancy, \\
+Long Island NY}
+\author{Nicole Maher \& Adam Starke}
+\maketitle\thispagestyle{empty}
+
+
+<<Setup, include=FALSE, echo=FALSE, dpi= 250>>=
+require(Hmisc)
+require(xtable)
+require(knitr)
+require(ggplot2)
+require(ggthemes)
+require(plyr)
+require(scales)
+require(ggmap)
+load(".RData")
+
+# Pulls in scripts(chunks) for creating tables and figures used within this document. The scripts/chunks are id-ed by the "@"-CodeChunkName at the start of each script. The following chunks are used in the document.
+read_chunk('graphs/Tables.R')  #Table
+read_chunk('graphs/SET_Plot_multiLMs.R') #SET Plot -Marsh Elevation Trends- LI sites
+read_chunk('graphs/SA_plots.R') #Surface Accretion plot
+read_chunk('graphs/Maps.R') #Maps of sites
+@
+
+\section{Intro}
+The following is a quick compilation of the trends that have been measured at sites being monitored by TNC across Long Island. Note that data is not complete and still needs to be verified fully. The rate of the overall change in elevation is calcuated by finding the average change in each of 9 pins from the start of the monitoring period to the present. More directly, a linear regression is fit to the height of the pins through time. These lines are then averaged across stations for each site. 
+
+Project area:
+<<Maps, echo=FALSE, results='asis', fig.align='center', warning=FALSE, message=FALSE>>=
+@
+Tables:
+<<Tables, echo=FALSE, results='asis', warning=FALSE>>=
+@
+
+
+\section{Visuals}
+What follows is a quick visual of the changes that have been measured along the marsh surfaces. The rate of the overall change in elevation is calcuated by finding the average change in each of 9 pins from the start of the monitoring period to the present. More directly, a linear regression is fit to the height of the pins through time. These lines are then averaged across stations for each site. 
+
+<<SA_Plots, echo=FALSE, results='asis', fig.align='center',  warning=FALSE, message=FALSE, include=TRUE>>=
+@
+
+<<Plot_multiLMs, echo=FALSE, results='asis', fig.align='center',  warning=FALSE, message=FALSE, include=TRUE >>=
+@
+
+
+
+\end{document}

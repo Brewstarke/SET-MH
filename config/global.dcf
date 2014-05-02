@@ -1,0 +1,9 @@
+data_loading: on
+cache_loading: on
+munging: on
+logging: off
+load_libraries: on
+libraries: reshape2, plyr, ggplot2, stringr, RODBC, xlsx, Hmisc, xtable, ggthemes, scales, png, jpeg, RColorBrewer
+as_factors: on
+data_tables: off
+recursive_loading: off
