@@ -35,7 +35,7 @@ slopeer <- function(d) {
 # 1.)
 # Calculate slope using function slopeer created above ----
 # Outputs only Position_ID-Pin#-Location_ID-slope
-meanslope.Pin <- ddply(SET.data.M, .(Position_ID, variable, Location_ID), slopeer)
+meanslope.Pin <- ddply(SET.data.M, .(SET_Type, Site_Name, Position_ID, Stratafication, variable, Location_ID), slopeer)
 
 #dt <- join(x= meanslope.Pin, y= StudySites, by= "Location_ID")
 #*************************************************************
@@ -44,7 +44,7 @@ meanslope.Pin <- ddply(SET.data.M, .(Position_ID, variable, Location_ID), slopee
 # (unique to site & station & SET arm position) by calculating mean slope and SE of slope means
 
 meanslope.Pos <- ddply(.data= meanslope.Pin, 
-                   .(Position_ID, Location_ID), # Can I add "Location_ID here and have it simply carry through to the output? instead of joining below?
+                   .(SET_Type, Site_Name, Stratafication, Position_ID, Location_ID), # 
                    summarize, 
                    meanslope= round(mean(slope,na.rm=TRUE),digits= 3), 
                    seSlope= round(sqrt(var(slope,na.rm=TRUE)/length(na.omit(slope))), digits= 3)) # can be replaced by stder function
@@ -54,7 +54,7 @@ meanslope.Pos <- ddply(.data= meanslope.Pin,
 # Calculate mean by Location_ID (Station) by averaging the mean slopes of each SET arm Position (which consists of mean pin slopes)
 # 
 meanslope.Loc <- ddply(.data= meanslope.Pos, 
-                       .(Location_ID), # Can I add "Location_ID here and have it simply carry through to the output? instead of joining below?
+                       .(SET_Type, Site_Name, Stratafication, Location_ID), # Can I add "Location_ID here and have it simply carry through to the output? instead of joining below?
                        summarize, 
                        meanslopes= round(mean(meanslope,na.rm=TRUE),digits= 3), 
                        seSlope= round(sqrt(var(meanslope,na.rm=TRUE)/length(na.omit(meanslope))), digits= 3)) # can be replaced by stder function
