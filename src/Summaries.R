@@ -20,5 +20,14 @@ SummaryTable <- join(x= SiteVisits, y= SummaryTable, by= c("Stratafication", "Si
 SummaryTableCoords <- join(x= SummaryTable, y= StudySites, by= "Site_Name", type= "left", match= 'first')
 SummaryTableCoords <- SummaryTableCoords[,c(1:9,18, 21:26)]
 
-write.xlsx(x= SummaryTableCoords, file="reports/SummaryTable.xls", append= FALSE)
+write.xlsx(x= SummaryTableCoords, file="reports/Summary_Table.xls", append= FALSE)
 
+## Plot means Summary
+
+PlotSummaryTable <- join(y= SA.plot.means,  
+		     x= SET.station.means, 
+		     by= c("Stratafication", "Plot_Name"), 
+		     type= "left")
+
+PlotSummaryTable$SubSurface_change <- PlotSummaryTable$meanslopes - PlotSummaryTable$plot_mean
+write.xlsx(x= PlotSummaryTable, file="reports/Stations_Summary_Table.xls", append= FALSE)
