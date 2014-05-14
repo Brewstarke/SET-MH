@@ -54,7 +54,7 @@ capwords <- function(s, strict = FALSE) {
 
 SET.data$Stratafication <- as.character(SET.data$Stratafication)
 SET.data$Stratafication <- as.factor(capwords(SET.data$Stratafication)) # Standardize the character format
-SET.data$Start_Date <- as.Date(SET.data$Start_Date)
+SET.data$Start_Date <- as.Date(SET.data$Start_Date) # Ensure that 'Start_Date' is of class 'date'
 
 # Clean up SET.data dataframe and reshape to allow for analysis-----
 # 'keeps' is list of variable names to keep; 'iders' are identifier variables used in reshaping the dataframe
@@ -137,13 +137,32 @@ SET.data.M <- ddply(SET.data.M,
 #Clean up SA.data dataframe and reshape; same as above but working on surface accretion data
 # similar steps as SET.data
 
-keepsA <- c("Location_ID", "Layer_Label", "Estab_Date", "Measure_1", "Measure_2", "Measure_3", "Measure_4","Measure_5", "Measure_6", "Site_Name", "Stratafication", "Plot_Name", "Start_Date")
-SA.data <- SA.data[keepsA]
-idersSA <- c("Location_ID", "Layer_Label", "Estab_Date", "Site_Name", "Stratafication", "Plot_Name", "Start_Date")
-SA.data.M <- melt(SA.data, id= idersSA, na.rm=TRUE)
+keepsA <- c("Location_ID", 
+	    "Layer_Label", 
+	    "Estab_Date", 
+	    "Measure_1", 
+	    "Measure_2", 
+	    "Measure_3", 
+	    "Measure_4",
+	    "Measure_5", 
+	    "Measure_6", 
+	    "Site_Name", 
+	    "Stratafication", 
+	    "Plot_Name", 
+	    "Start_Date")
+SA.data <- SA.data[keepsA] # Drop unneeded variables
+
+idersSA <- c("Location_ID", 
+	     "Layer_Label", 
+	     "Estab_Date", 
+	     "Site_Name", 
+	     "Stratafication", 
+	     "Plot_Name", 
+	     "Start_Date")
+SA.data.M <- melt(SA.data, id= idersSA, na.rm=TRUE) # melt down dataframe into tidy table.
 
 
-# Create variable DecYear- decimal years - in SA data, for regression analysis
+# Create variable DecYear- decimal years - in SA.data, for regression analysis
 SA.data.M$DecYear <- round((((as.numeric(difftime(SA.data.M$Start_Date, SA.data.M$Estab_Date, units = "days"))))/365),3)
 
 #SA.data.M$DecYear <- round(((SA.data.M$Start_Date-SA.data.M$Estab_Date)/365),3)
