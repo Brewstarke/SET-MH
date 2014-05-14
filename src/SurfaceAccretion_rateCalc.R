@@ -59,7 +59,7 @@ SA.plot.means <- ddply(.data= meanslope.Accret,
 
 # Join to get Station info-
 SA.plot.means <- join(x= SA.plot.means, y= StudySites, by= "Location_ID", type= "left")
-SA.plot.means <- SA.plot.means[,2:6]
+SA.station.means <- SA.plot.means[,2:6]
 
 #Use plot means to calculate station means-
 

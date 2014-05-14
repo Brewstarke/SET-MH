@@ -4,7 +4,7 @@ Immediate Actions:
 
 Needs:
 -Add cast functions to post tables of site and station 'attributes' like number of positions measured etc.
-
+-Reshape the Shallow SET data summary to have column of shallow elevation changes, deep elevation changes and surface accretion. This will allow parsing out the unique elevation changes to each 'part' of the marsh.
 
 -Fix bug in /graphs/Plotting_Tool doPlot function
 

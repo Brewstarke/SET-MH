@@ -43,14 +43,17 @@ rm(Events,
 # One set contains SET data with location, date and pin height data
 # One has Surface Accretion data with location, date and accretion data
 capwords <- function(s, strict = FALSE) {
-  cap <- function(s) paste(toupper(substring(s, 1, 1)),
-{s <- substring(s, 2); if(strict) tolower(s) else s},
-sep = "", collapse = " " )
-sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))
+	cap <- function(s) paste(toupper(substring(s, 1, 1)),
+				 {
+				 	s <- substring(s, 2); if(strict) tolower(s) else s
+				 	},
+				 sep = "", collapse = " " )
+	sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))
 }
 
+
 SET.data$Stratafication <- as.character(SET.data$Stratafication)
-SET.data$Stratafication <- as.factor(capwords(SET.data$Stratafication))
+SET.data$Stratafication <- as.factor(capwords(SET.data$Stratafication)) # Standardize the character format
 SET.data$Start_Date <- as.Date(SET.data$Start_Date)
 
 # Clean up SET.data dataframe and reshape to allow for analysis-----

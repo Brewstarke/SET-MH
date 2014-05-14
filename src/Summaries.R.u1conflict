@@ -1,0 +1,21 @@
+## Summary Tables and Plots
+require(xlsx)
+require(reshape2)
+require(plyr)
+
+SummaryTable <- join(SA.site.means, SET.site.means, by= c("Stratafication", "Site_Name"))
+
+SamplingSummary <-  SET.data %.% 
+  group_by(Site_Name, Stratafication) %.%
+  summarise("Sampled N" = length(unique(Start_Date)))
+
+SummaryTable <- join(SummaryTable, SamplingSummary, by= c("Stratafication", "Site_Name"))
+
+SummaryTable$SubSurface_change <- SummaryTable$Mean_elevation_change - SummaryTable$Mean_Accretion_Rate
+
+SummaryTableCoords <- join(x= SummaryTable, y= StudySites, by= "Site_Name", type= "left", match= 'first')
+SummaryTableCoordsabbre <- SummaryTableCoords[,c(1:8, 17, 20:25)]
+
+write.xlsx(x= SummaryTable, file="reports/SummaryTable.xls", append= FALSE)
+
+
