@@ -5,7 +5,19 @@
 #
 ###
 require(RODBC)
-SET.DB.path <- file.choose()
+
+pathLoader <- function(){
+	if(Sys.info()['sysname'] == "Windows"){
+		SET.DB.path <<- "C:\\Users\\astarke\\Documents\\Marsh-Wetlands\\SET_Monitoring_Database\\Database_storage\\SET_DB_BE_ver_2.94_TNC_Master.mdb"
+	} else if (Sys.info()['sysname'] == "Ubuntu"){ # Check this on my machine-
+		SET.DB.path <<-  file.choose()
+	} else SET.DB.path <<- file.choose()
+	
+	SET.DB.path
+}	
+
+pathLoader() # Load in the path to the Database Back End.
+
 SET.DB <- odbcConnectAccess2007(SET.DB.path)
 
 

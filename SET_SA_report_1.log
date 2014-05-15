@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.10.29)  3 APR 2014 13:31
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.10.29)  14 MAY 2014 16:49
 entering extended mode
 **SET_SA_report_1.tex
 (C:\Users\astarke\R\SET-MH_Analysis\SET_SA_report_1.tex
@@ -140,55 +140,60 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <8> on input line 58.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 58.
- <figure/Maps.pdf, id=1, 505.89pt x 505.89pt>
-File: figure/Maps.pdf Graphic file (type pdf)
- <use figure/Maps.pdf>
-Package pdftex.def Info: figure/Maps.pdf used on input line 70.
-(pdftex.def)             Requested size: 345.0pt x 345.00414pt.
- [1
+LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 71.
 
-{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 82.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 82.
+Overfull \hbox (274.4946pt too wide) in paragraph at lines 71--72
+[]\OT1/cmtt/m/n/10 ## Error: cannot open URL 'http://b.tile.cloudmade.com/c669d
+b620b804a3a90fbe4193c4c6ec8/125286@2x/256/10/301/383.png'[] 
+ []
 
-Overfull \hbox (458.77095pt too wide) in paragraph at lines 82--99
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 80.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 80.
+
+Overfull \hbox (580.1434pt too wide) in paragraph at lines 80--103
  [][] 
  []
 
-[2 <C:/Users/astarke/R/SET-MH_Analysis/figure/Maps.pdf>]
-<figure/SA_Plots.pdf, id=19, 505.89pt x 505.89pt>
+<figure/SA_Plots.pdf, id=1, 505.89pt x 505.89pt>
 File: figure/SA_Plots.pdf Graphic file (type pdf)
  <use figure/SA_Plots.pdf>
-Package pdftex.def Info: figure/SA_Plots.pdf used on input line 110.
+Package pdftex.def Info: figure/SA_Plots.pdf used on input line 114.
 (pdftex.def)             Requested size: 345.0pt x 345.00414pt.
 
-<figure/Plot_multiLMs.pdf, id=20, 505.89pt x 505.89pt>
+<figure/Plot_multiLMs.pdf, id=2, 505.89pt x 505.89pt> [1
+
+{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}]
+Overfull \vbox (48.093pt too high) has occurred while \output is active []
+
+
+[2 <C:/Users/astarke/R/SET-MH_Analysis/figure/SA_Plots.pdf>]
 File: figure/Plot_multiLMs.pdf Graphic file (type pdf)
 
 <use figure/Plot_multiLMs.pdf>
-Package pdftex.def Info: figure/Plot_multiLMs.pdf used on input line 120.
+Package pdftex.def Info: figure/Plot_multiLMs.pdf used on input line 124.
 (pdftex.def)             Requested size: 345.0pt x 345.00414pt.
- [3 <C:/Users/astarke/R/SET-MH_Analysis/figure/SA_Plots.pdf>] [4 <C:/Users/asta
-rke/R/SET-MH_Analysis/figure/Plot_multiLMs.pdf>]
-(C:\Users\astarke\R\SET-MH_Analysis\SET_SA_report_1.aux) ) 
+ [3 <C:/Users/astarke/R/SET-MH_Analysis/figure/Plot_multiLMs.pdf>] (C:\Users\as
+tarke\R\SET-MH_Analysis\SET_SA_report_1.aux) ) 
 Here is how much of TeX's memory you used:
- 1594 strings out of 493921
- 20994 string characters out of 3147275
- 78819 words of memory out of 3000000
- 4898 multiletter control sequences out of 15000+200000
- 7280 words of font info for 26 fonts, out of 3000000 for 9000
+ 1592 strings out of 493921
+ 20944 string characters out of 3147275
+ 83819 words of memory out of 3000000
+ 4896 multiletter control sequences out of 15000+200000
+ 7448 words of font info for 27 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 27i,10n,19p,523b,198s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files/MiK
-TeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files/MiKTeX 2.9/
-fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
-e1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public
-/amsfonts/cm/cmr17.pfb>
-Output written on SET_SA_report_1.pdf (4 pages, 520750 bytes).
+ 27i,10n,19p,523b,222s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Program Files/MiKTeX 2.9/font
+s/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/
+public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/am
+sfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm
+/cmr17.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt10.p
+fb>
+Output written on SET_SA_report_1.pdf (3 pages, 438948 bytes).
 PDF statistics:
- 59 PDF objects out of 1000 (max. 8388607)
+ 53 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 16 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 11 words of extra memory for PDF output out of 10000 (max. 10000000)
 
