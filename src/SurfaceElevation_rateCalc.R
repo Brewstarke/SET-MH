@@ -21,19 +21,20 @@
 # lmSET is made up by subsetting on Site_Name, Plot_Name, Arm_Direction, and Pin
 
 #*************************************************************
+# Function creation in /lib directory.
 # Create a function that checks to see if there's enough data to calculate a linear regression, 
 # and then regresses pin height across time (as decimal year) 
-slopeer <- function(d) {
-  if(nrow(d) < 3) {return(data.frame(intercept = NA, slope = NA)) # if number of rows (data points) is less than 3 return NA's
-  } else {                                                        # if there's enough data take data = d (which will be subsetted in later functions) then...
-    p <-  coef(lm(Raw ~ DecYear, data = d))                       # regress the pin heigh against time (decimal years) and return the coefficients of the regression- slope and intercept
-    p <- data.frame(slope = round(p[2], digits= 4))               # subset out just the slope coefficient from the object p 
-  }
-} # this function is also found in '/helpers.R' 
-
+# slopeer <- function(d) {
+#   if(nrow(d) < 3) {return(data.frame(intercept = NA, slope = NA)) # if number of rows (data points) is less than 3 return NA's
+#   } else {                                                        # if there's enough data take data = d (which will be subsetted in later functions) then...
+#     p <-  coef(lm(Raw ~ DecYear, data = d))                       # regress the pin heigh against time (decimal years) and return the coefficients of the regression- slope and intercept
+#     p <- data.frame(slope = round(p[2], digits= 4))               # subset out just the slope coefficient from the object p 
+#   }
+# } # this function is also found in '/helpers.R' 
+#
 #*************************************************************
 # 1.)
-# Calculate slope using function slopeer created above ----
+# Calculate slope (height regressed against time) for each pin using function slopeer created above ----
 # 
 meanslope.Pin <- ddply(SET.data.M, .(SET_Type, 
                                      Site_Name, 
@@ -44,6 +45,7 @@ meanslope.Pin <- ddply(SET.data.M, .(SET_Type,
                                      Location_ID), slopeer)
 
 #dt <- join(x= meanslope.Pin, y= StudySites, by= "Location_ID")
+
 #*************************************************************
 # 2.)
 # Summarize slopes by Position_ID ----
@@ -89,8 +91,7 @@ SET.site.means <- ddply(.data= SET.station.means,
 
 SET.site.means <- rename(SET.site.means, replace=c(meanslope = "Mean_elevation_change", seSlope = "SE_ofmeanrate"))
 
-### All clear to hear-- 10Mar2014- AFS -----TEST FROM HERE UP
-# Up to here works but needs to be better documented and cleaned up.
+## Output an excel file containing SET elevations.
 
 write.xlsx(x=SET.site.means, file="reports/SETelevrate.xls")
 
