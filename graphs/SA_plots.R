@@ -11,5 +11,6 @@ SA_Plot2 +
   stat_smooth(method="lm", color = "mediumblue", size = 1, alpha = .7) + 
   labs(list(title = "Marsh Accretion- Long Island Sites", y = "Cumulative Accretion (mm)", x = "Date")) +
   ylim(-15,40) +
-  geom_path(by=SET.data.M$ID, alpha=.05)
+  geom_path(by=SET.data.M$ID, alpha=.05) +
+	theme(legend.position= "bottom")
 
