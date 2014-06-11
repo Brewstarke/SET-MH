@@ -34,3 +34,8 @@ PlotSummaryTable <- join(y= SA.plot.means,
 PlotSummaryTable$SubSurface_change <- PlotSummaryTable$meanslopes - PlotSummaryTable$plot_mean
 
 write.xlsx(x= PlotSummaryTable, file="reports/Stations_Summary_Table.xls", append= FALSE)
+
+SummaryTemp <- melt(data= SummaryTable, 
+		    id.var= c("Site_Name", "Stratafication", "SET_Type"), 
+		    measure.var= c("Sample N", "Mean_elevation_change", "SE_ofmeanrate", "Mean_Accretion_Rate", "SE of mean Accrretion mm/yr", "SubSurface_change"), na.rm=TRUE)
+SummaryTemp2 <- dcast(data=SummaryTemp, formula= Site_Name + Stratafication ~ ...)
