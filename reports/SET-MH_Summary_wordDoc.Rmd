@@ -1,0 +1,66 @@
+---
+title: "SET-MH Summary"
+output: word_document
+---
+
+First run through RMarkdown v.2.0--
+
+
+```{r Setup, include=FALSE, echo=FALSE, eval=TRUE}
+
+load(".RData")
+
+
+# Pulls in scripts(chunks) for creating tables and figures used within this document. The scripts/chunks are id-ed by the "@"-CodeChunkName at the start of each script. The following chunks are used in the document.
+```
+
+```{r functions}
+SET_Plot_facetted <- function()
+	{
+SET_Plot2 <- ggplot(data=SET.data.M, aes(y = change, 
+                                         x = Date, color= interaction(Stratafication, SET_Type, sep= " "))) 
+
+SET_Plot2 + 
+	theme_bw(base_family="serif") +
+	geom_point(alpha= 0.15) + 
+	stat_smooth(method="lm", size = 1.5, alpha = 1) +
+	facet_wrap( ~ Site_Name) +
+	labs(list(title = "Marsh Elevation Trends- TNC Long Island Sites", 
+		  y = "Elevation Change (mm)", 
+		  x = "Date",
+		  colour = "Marsh and SET Type")) +
+	ylim(-15,40) +
+	theme(legend.position= "bottom")
+
+	}
+
+
+
+SET_Plot_overlay <- function(SET_Type = 'Rod SET')
+	{
+	data <- SET.data.M[(SET.data.M$SET_Type == SET_Type),]
+	SET_Plot2 <- ggplot(data= data, aes(y = change, 
+						 x = Date, color= interaction(Site_Name, Stratafication, 
+						 			     SET_Type, sep= " "))) 
+	
+	SET_Plot2 + 
+		theme_bw(base_family="serif") +
+		# geom_point(alpha= 0.15) + 
+		stat_smooth(method="lm", size = 1, alpha = .25, se = FALSE) +
+		
+		labs(list(title = "Marsh Elevation Trends- TNC Long Island Sites", 
+			  y = "Elevation Change (mm)", 
+			  x = "Date",
+			  colour = "Marsh and SET Type")) +
+		ylim(-15,40)
+		#theme(legend.position= "bottom")
+	
+}
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+SET_Plot_overlay(SET_Type = "Shallow SET")
+```
+

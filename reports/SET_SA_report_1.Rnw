@@ -9,8 +9,8 @@ Long Island NY}
 
 \section{Summary}
 
-<<Setup, include=FALSE, echo=FALSE>>=
-#setwd("SET-MH_Analysis")
+<<setup, include=FALSE, echo= FALSE, warning=FALSE >>=
+
 library(Hmisc)
 library(xtable)
 library(knitr)
@@ -19,7 +19,9 @@ library(ggthemes)
 library(plyr)
 library(scales)
 load(".Rdata")
+
 # Pulls in scripts(chunks) for creating tables and figures used within this document. The scripts/chunks are id-ed by the "@"-CodeChunkName at the start of each script. The following chunks are used in the document.
+
 read_chunk('graphs/Tables.R')  #Table 1 and Table 2
 read_chunk('graphs/Plots_2.R') #SET Plot -Marsh Elevation Trends- LI sites
 read_chunk('graphs/SA_plots.R') #Surface Accretion plot
