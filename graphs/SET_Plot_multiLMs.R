@@ -46,11 +46,15 @@ SET_Plot_overlay <- function(SET_Type = 'Rod SET', highlightSite)
 	
 	data <- SET.data.M[(SET.data.M$SET_Type == SET_Type),] # Subset the data type
 	
-	SET.data.M$highlight <- if(SET.data.M$Site_Name== highlightSite){
+	SET.data.M$highlight <- for (i in seq(length(SET.data.M$Site_Name))){
+		
+		
+	if(SET.data.M$Site_Name== "Mashomack"){
 		SET.data.M$highlight = 1
 	} else {
 		SET.data.M$highlight = 0
 	}
+}
 	
 	SET_Plot2 <- ggplot(data= data, aes(y = change, 
 						 x = Date, 
