@@ -9,7 +9,7 @@ SummaryTable <- join(y= SA.site.means,
 		     by= c("Stratafication", "Site_Name"), 
 		     type= "left")
 
-SummaryTable$SubSurface_change <- SummaryTable$Mean_elevation_change - SummaryTable$Mean_Accretion_Rate
+# SummaryTable$SubSurface_change <- SummaryTable$Mean_elevation_change - SummaryTable$Mean_Accretion_Rate
 
 SiteVisits <- SET.data %.%
 		group_by( Site_Name, Stratafication, SET_Type ) %.%
@@ -31,11 +31,15 @@ PlotSummaryTable <- join(y= SA.plot.means,
 		     by= c("Stratafication", "Plot_Name"), 
 		     type= "left")
 
-PlotSummaryTable$SubSurface_change <- PlotSummaryTable$meanslopes - PlotSummaryTable$plot_mean
+# PlotSummaryTable$SubSurface_change <- PlotSummaryTable$meanslopes - PlotSummaryTable$plot_mean
 
 write.xlsx(x= PlotSummaryTable, file="reports/Stations_Summary_Table.xls", append= FALSE)
 
 SummaryTemp <- melt(data= SummaryTable, 
 		    id.var= c("Site_Name", "Stratafication", "SET_Type"), 
 		    measure.var= c("Sample N", "Mean_elevation_change", "SE_ofmeanrate", "Mean_Accretion_Rate", "SE of mean Accrretion mm/yr", "SubSurface_change"), na.rm=TRUE)
+
 SummaryTemp2 <- dcast(data=SummaryTemp, formula= Site_Name + Stratafication ~ ...)
+
+write.xlsx(x= SummaryTemp2, file="reports/Stations_Summary_Table.xls", append= FALSE)
+
