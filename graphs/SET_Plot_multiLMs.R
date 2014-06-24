@@ -37,7 +37,7 @@ SET_Plot2 +
 
 #### Overlay plot
 
-SET_Plot_overlay <- function(SET_Type = 'Rod SET', highlightSite)
+SET_Plot_overlay <- function(SET_Type = 'Rod SET', highlightSite = NULL)
 	{
 	require(ggplot2)
 	require(ggthemes)
@@ -47,36 +47,35 @@ SET_Plot_overlay <- function(SET_Type = 'Rod SET', highlightSite)
 	
 	data <- SET.data.M[(SET.data.M$SET_Type == SET_Type),] # Subset the data type
 	
-	SET.data.M$highlight <- for (i in seq(length(SET.data.M$Site_Name))){
+	# Add control structure to ensure Site is available to select.
+
+	data$highlight <-  data$Site_Name == highlightSite
 		
-		
-	if(SET.data.M$Site_Name== "Mashomack"){
-		SET.data.M$highlight = 1
-	} else {
-		SET.data.M$highlight = 0
-	}
-}
-	
 	SET_Plot2 <- ggplot(data= data, aes(y = change, 
 						 x = Date, 
-						 linetype= interaction(Site_Name, 
+						 group= interaction(Site_Name, 
 						 		      Stratafication, 
 						 		      SET_Type, 
 						 		      sep= " "), 
-						 color= SET.data.M$highlight)) 
-	
+						 color = highlight,
+						 alpha= 0.5)) 
+	end <- max(data$Date)
 	SET_Plot2 + 
 		theme_bw(base_family="serif") +
-		# geom_point(alpha= 0.15) + 
-		stat_smooth(method = loess, size = 1, alpha = .25, se = FALSE) +
-		
-		labs(list(title = "Marsh Elevation Trends- TNC Long Island Sites- ", 
+		stat_smooth(method = loess, size = .75,  se = FALSE) +
+		#annotate("text", y= 10, label = "Some text")+
+		#geom_point(alpha = 0.1) +
+		#geom_path(alpha = 0.1) +
+		#facet_wrap( ~ Site_Name) +
+		labs(list(title = "Marsh Elevation Trends Across LI",
 			  y = "Elevation Change (mm)", 
-			  x = "Date",
-			  colour = "Marsh and SET Type")) +
-		ylim(-15,40)
-		#theme(legend.position= "bottom")
+			  x = "Date")) +
+		ylim(-15,40) +
+		scale_x_date(limits = c(as.Date("2013-1-1"), end))+
+		theme(legend.position= "none")
+		
 	
 }
 
-
+SET_Plot_overlay(SET_Type = "Rod SET", 
+		 highlightSite = c("North Greensedge - West Hempstead", "Lawrence Marsh"))
