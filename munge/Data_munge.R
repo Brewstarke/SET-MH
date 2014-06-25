@@ -106,7 +106,7 @@ SET.data.M <- melt(SET.data, id= iders, na.rm=TRUE)
 ###
 #  Munge dates to create sample date and establishment date---- 
 #  
-# Rename 'Start_Date' to just 'Date'
+# Rename 'Start_Date' to just 'Date' to remove confusing variable name
 SET.data.M$Date <- as.Date((SET.data.M$Start_Date))
 
 # Create column of 'establishment dates'= EstDate ----
@@ -129,7 +129,8 @@ SET.data.M <- ddply(SET.data.M,
                     .(Position_ID,
                       variable), 
                     transform, 
-                    change = as.numeric(Raw-Raw[1]))
+                    change = as.numeric(Raw-Raw[1]),
+		    incrementalChange = c(NA, diff(change)))
 
 ###
 # Surface Accretion  -----
