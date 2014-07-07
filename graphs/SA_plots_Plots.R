@@ -9,7 +9,7 @@ SA_Plot_grid <- function(highlightSite = NULL, title)
 	title <- title
 	# 	data <- SET.data.M[(SET.data.M$SET_Type == SET_Type),] # Subset the data type - removed to add faceting on this variable
 	data <- SA.data.M
-	SiteOrder <- unique(SA.data.M$Site_Name)[c(9,8,1:7)]
+	SiteOrder <- unique(SA.data.M$Site_Name)[c(8:7, 1:2, 4, 6, 9, 3, 5)]
 	data$Site_Name <- factor(data$Site_Name, levels= SiteOrder) 
 	
 	# Add control structure to ensure Site is available to select.
@@ -28,13 +28,12 @@ SA_Plot_grid <- function(highlightSite = NULL, title)
 	SA <- S + 
 		
 		stat_smooth(method = glm, size = 1,  se = FALSE) + 
-		stat_smooth(method= loess, se= FALSE, size= .5, alpha = 1) + 
+		#stat_smooth(method= loess, se= FALSE, size= .5, alpha = 1) + 
 		
-		facet_wrap( ~ Site_Name, ncol = 1) +
-		scale_x_date(breaks = "6 months", 
+		facet_wrap( ~ Site_Name, ncol = 3) +
+		scale_x_date(breaks = "1 year", 
 			     labels=date_format("%Y"), 
-			     limits = as.Date(c('2011-10-01','2014-10-01'))) + 
-		
+			     limits = as.Date(c('2008-10-01','2014-10-01'))) + 
 		theme_bw(base_family="serif") + 
 		theme(legend.position= "none") +
 		
