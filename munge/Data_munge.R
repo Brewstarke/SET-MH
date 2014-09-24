@@ -174,3 +174,4 @@ SA.data.M <- rename(SA.data.M, c(value="Accretion")) #rename 'value' to 'Accreti
 stder <- function(x){ sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))}
 
 ### All clear to hear-- 07Mar2014- AFS -----
+
