@@ -12,7 +12,7 @@
 
 setwd("SET-MH_Analysis") 
 
-require(ProjectTemplate)
+library(ProjectTemplate)
 
 
 load.project()
