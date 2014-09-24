@@ -64,35 +64,3 @@ SET_Plot2 +
 	geom_path(aes(color= Site))) + 
 		  	facet_wrap(Stratafication ~ SET_Type)
 	
-
-SET_plot3 <- 
-
-
-# 					    group= interaction(Site_Name, 
-# 					    		   Stratafication, 
-# 					    		   SET_Type, 
-# 					    		   sep= " "), 
-# 					    color = highlight,
-# 					    alpha= 0.5)) 
-# 	
-# 	SET_Plot + 
-# 		theme_bw(base_family="serif") +
-# 		geom_dotplot() + facet_wrap( ~ SET_Type)
-# 		
-# 	
-# 	
-# # 	annotate("text", y= 10, label = "Some text")+
-# 		geom_point(alpha = 0.1) +
-# 		geom_path(alpha = 0.1) +
-# 		facet_wrap( ~ Site_Name) +
-# 		labs(list(title = title,
-# 			  y = "Relative Elevation of marsh surface (mm)", 
-# 			  x = "Date")) +
-# 		#ylim(-15,40) +
-# 		theme(legend.position= "none")
-# 	
-# 	
-# }
-# 
-# SET_Plot_overlay2(SET_Type = "Rod SET", highlightSite = c("North Greensedge - West Hempstead", "Lawrence Marsh"), title = "Marsh elevation changes across LI")
-

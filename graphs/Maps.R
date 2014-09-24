@@ -7,7 +7,7 @@
 ###
 
 # Mapping the SET-MH sites (merged 1st station coordinates for site coordinates) along with some additional data
-
+library(ggmap)
 ## For cloudmade maps
 api <- c("c669db620b804a3a90fbe4193c4c6ec8")
 # Basic_marshplots- Blank

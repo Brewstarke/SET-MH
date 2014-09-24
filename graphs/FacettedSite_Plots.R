@@ -32,7 +32,7 @@ SET_Plot_overlayvert <- function(highlightSite = NULL, title)
 	
 		stat_smooth(method = glm, size = 1,  se = FALSE) + 
 		#stat_smooth(method= loess, se= FALSE, size= .5, alpha = 1) + 
-		
+	
 		facet_wrap( ~ Site_Name, ncol = 3) +
 		scale_x_date(breaks = "6 months", 
 			     labels=date_format("%Y"), 
