@@ -121,14 +121,14 @@ SET.data.M <-ddply(SET.data.M,
 # difftime- calculates the time difference between t1 and t2 in units identified
 
 SET.data.M$DecYear <- round((((as.numeric(difftime(SET.data.M$Date, SET.data.M$EstDate, units = "days"))))/365),3)
-SET.data.M <- rename(SET.data.M, c(value="Raw")) #rename 'value' to 'Raw'
+#SET.data.M <- rename(SET.data.M, c(value="Raw")) #rename 'value' to 'Raw'
 SET.data.M <- SET.data.M[order(SET.data.M$Start_Date),]
 
 # Calculates a 'change' used for plots primarily- regressions are run through 'raw' data to reduce chance of error.
 SET.data.M <- ddply(SET.data.M, 
                     .(Position_ID,
                       variable), 
-                    transform, 
+                    mutate, 
                     change = as.numeric(Raw-Raw[1]),
 		    incrementalChange = c(NA, diff(change)))
 
