@@ -59,12 +59,13 @@ SA.plot.means <- ddply(.data= meanslope.Accret,
 
 # Join to get Station info-
 SA.plot.means <- join(x= SA.plot.means, y= StudySites, by= "Location_ID", type= "left")
-SA.station.means <- SA.plot.means[,2:6]
+SA.station.means <- SA.plot.means[,3:6]
+SA.plot.means <- SA.plot.means[,3:36]
 
 #Use plot means to calculate station means-
 
 
-SA.site.means <- ddply(.data=SA.plot.means, 
+SA.site.means <- plyr::ddply(.data=SA.plot.means, 
                           .(Site_Name, 
                             Stratafication), # Same as above, add Layer_ID as it's unique to the station level (effectively averaging the plots from above)
                           summarize, 
@@ -72,7 +73,7 @@ SA.site.means <- ddply(.data=SA.plot.means,
                           site_SE= round(stder(plot_mean), digits= 3)
                        )
 
-SA.site.means <- rename(SA.site.means, replace=c(site_Mean = "Mean_Accretion_Rate", site_SE = "SE of mean Accrretion mm/yr"))
+SA.site.means <- plyr::rename(SA.site.means, replace=c(site_Mean = "Mean_Accretion_Rate", site_SE = "SE of mean Accrretion mm/yr"))
 
 
 write.xlsx(x= SA.site.means, file="reports/SArates.xls")
