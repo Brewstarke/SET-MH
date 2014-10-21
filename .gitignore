@@ -13,3 +13,5 @@
 .Rhistory.u1conflict
 Thumbs.db
 .gitignore
+reports/
+.gitignore
