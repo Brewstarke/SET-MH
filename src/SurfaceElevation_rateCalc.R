@@ -89,7 +89,7 @@ SET.site.means <- ddply(.data= SET.station.means,
                        meanslope= round(mean(meanslopes,na.rm=TRUE),digits= 3), 
                        seSlope= round(sqrt(var(meanslopes,na.rm=TRUE)/length(na.omit(meanslopes))), digits= 3)) # can be replaced by stder function
 
-SET.site.means <- rename(SET.site.means, replace=c(meanslope = "Mean_elevation_change", seSlope = "SE_ofmeanrate"))
+SET.site.means <- plyr::rename(SET.site.means, replace=c(meanslope = "Mean_elevation_change", seSlope = "SE_ofmeanrate"))
 
 ## Output an excel file containing SET elevations.
 
