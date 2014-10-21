@@ -9,10 +9,10 @@ SummaryTable <- join(y= SA.site.means,
 		     by= c("Stratafication", "Site_Name"), 
 		     type= "left")
 
-# SummaryTable$SubSurface_change <- SummaryTable$Mean_elevation_change - SummaryTable$Mean_Accretion_Rate
+SummaryTable$SubSurface_change <- SummaryTable$Mean_elevation_change - SummaryTable$Mean_Accretion_Rate
 
-SiteVisits <- SET.data %.%
-		group_by( Site_Name, Stratafication, SET_Type ) %.%
+SiteVisits <- SET.data %>%
+		group_by( Site_Name, Stratafication, SET_Type ) %>%
 		summarise("Sample N" = length(unique(Start_Date)))
 
 SummaryTable <- join(x= SiteVisits, 
