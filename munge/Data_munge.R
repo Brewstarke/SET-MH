@@ -4,9 +4,9 @@
 # 
 ### 
 # Required Packages -----
-require(reshape2)
-require(RODBC)
-require(plyr)
+library(reshape2)
+library(RODBC)
+library(plyr)
 
 #SQL type joins to flatten the tables from the database. ----
 
@@ -121,7 +121,7 @@ SET.data.M <-ddply(SET.data.M,
 # difftime- calculates the time difference between t1 and t2 in units identified
 
 SET.data.M$DecYear <- round((((as.numeric(difftime(SET.data.M$Date, SET.data.M$EstDate, units = "days"))))/365),3)
-SET.data.M <- rename(SET.data.M, c(value="Raw")) #rename 'value' to 'Raw'
+SET.data.M <- plyr::rename(SET.data.M, c(value="Raw")) #rename 'value' to 'Raw'
 SET.data.M <- SET.data.M[order(SET.data.M$Start_Date),]
 
 # Calculates a 'change' used for plots primarily- regressions are run through 'raw' data to reduce chance of error.
@@ -167,7 +167,7 @@ SA.data.M <- melt(SA.data, id= idersSA, na.rm=TRUE) # melt down dataframe into t
 SA.data.M$DecYear <- round((((as.numeric(difftime(SA.data.M$Start_Date, SA.data.M$Estab_Date, units = "days"))))/365),3)
 
 #SA.data.M$DecYear <- round(((SA.data.M$Start_Date-SA.data.M$Estab_Date)/365),3)
-SA.data.M <- rename(SA.data.M, c(value="Accretion")) #rename 'value' to 'Accretion'
+SA.data.M <- plyr::rename(SA.data.M, c(value="Accretion")) #rename 'value' to 'Accretion'
 
 
 
