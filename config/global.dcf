@@ -1,9 +1,12 @@
-data_loading: on
-cache_loading: on
-munging: on
-logging: off
-load_libraries: on
-libraries: reshape2, plyr, ggplot2, stringr, RODBC, xlsx, Hmisc, xtable, ggthemes, scales, png, jpeg, RColorBrewer, dplyr
-as_factors: on
-data_tables: off
-recursive_loading: off
+data_loading: TRUE
+cache_loading: TRUE
+munging: TRUE
+logging: FALSE
+load_libraries: TRUE
+libraries: reshape2, plyr, ggplot2, stringr, RODBC, xlsx, Hmisc,
+        xtable, ggthemes, scales, png, jpeg, RColorBrewer, dplyr
+as_factors: TRUE
+data_tables: FALSE
+recursive_loading: FALSE
+version: 0.6
+attach_internal_libraries: TRUE
