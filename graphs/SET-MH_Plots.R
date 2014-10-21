@@ -1,6 +1,6 @@
 
 
-SET_Plot_overlayvert <- function(title)
+SET_Plot_overlayvert <- function(plot_title)
 {
 	require(ggplot2)
 	require(ggthemes)
@@ -8,11 +8,11 @@ SET_Plot_overlayvert <- function(title)
 	require(reshape2)
 	require(scales)
 	
-	title <- title
+	plot_title <- plot_title
 	data <- SET.data.M[(SET.data.M$SET_Type == "Rod SET"),] # Subset the data type - removed to add faceting on this variable
 	#data <- join(x = SET.data.M, y= SA.data.M, by = c("Site_Name", "Stratafication", "Plot_Name", "Start_Date"))
 	data_01 <- SA.data.M
-	data_01 <- rename(x = data_01, replace = c("Start_Date" = "Date", "Accretion" = "change"))
+	data_01 <- plyr::rename(x = data_01, replace = c("Start_Date" = "Date", "Accretion" = "change"))
 	SiteOrder <- unique(SET.data.M$Site_Name)[c(9,8,1:2, 4, 6, 7, 3, 5)]
 	data$Site_Name <- factor(data$Site_Name, levels= SiteOrder) 
 	
@@ -53,7 +53,7 @@ SET_Plot_overlayvert <- function(title)
 			     limits = as.Date(c('2011-10-01','2014-10-01'))) +
 		theme_bw(base_family="serif") + 
 		theme(legend.position= "none") +
-		labs(list(title = title, 
+		labs(list(title = plot_title, 
 			  y = "Relative Elevation of marsh surface (mm)", 
 			  x = "Date"))+
 		scale_linetype_identity(name= "Monitoring Type", 
@@ -67,4 +67,4 @@ SET_Plot_overlayvert <- function(title)
 
 ##
 
-SET_Plot_overlayvert(title = "Marsh Elevation Changes Across LI")
+SET_Plot_overlayvert(plot_title = "Marsh Elevation Changes Across LI")
