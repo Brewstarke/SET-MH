@@ -1,7 +1,7 @@
 Long Island Marsh Elevation Summary
 ========================================================
 ```{r my-layout,echo=FALSE, eval=FALSE}
-theme(legend.text = element_text(size = 12))+
+theme(legend.text = element_text(size = 10))+
 theme(legend.position = "bottom") + 
 theme_bw()
 ```
