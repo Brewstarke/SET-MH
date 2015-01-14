@@ -30,7 +30,7 @@ SA.plug.means <- ddply(.data= SA.data.M, # Average depth for each plug cut
                          Start_Date, 
                          Location_ID,
                          Plot_Name),
-                       summarize,
+											 plyr::summarize,
                        Dec_year= mean(DecYear),
                        plug_mean= round(mean(Accretion), digits= 3),
                        plug_se= round(sqrt(var(Accretion,na.rm=TRUE)/length(na.omit(Accretion))))
@@ -52,7 +52,7 @@ SA.plot.means <- ddply(.data= meanslope.Accret,
                          Site_Name, 
                          Stratafication, 
                          Plot_Name),
-                       summarize,
+											 plyr::summarize,
                        plot_mean = round(mean(slope,na.rm=TRUE),digits= 3), 
                        plot_SE= round(sqrt(var(slope,na.rm=TRUE)/length(na.omit(slope))), digits= 3)
                        )
@@ -68,7 +68,7 @@ SA.plot.means <- SA.plot.means[,3:36]
 SA.site.means <- plyr::ddply(.data=SA.plot.means, 
                           .(Site_Name, 
                             Stratafication), # Same as above, add Layer_ID as it's unique to the station level (effectively averaging the plots from above)
-                          summarize, 
+														 plyr::summarize, 
                           site_Mean= round(mean(plot_mean, na.rm=TRUE), digits= 3), 
                           site_SE= round(stder(plot_mean), digits= 3)
                        )
