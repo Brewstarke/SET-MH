@@ -15,7 +15,12 @@ Needs:
   -strategy 2- modify the ID field to add one layer on top of the stations
 
 -Need to enter GPS coords in database
+-Clean up Locations datatable to remove NA's
+
 
 Wishes and Ideas:
 
 - Add a warning() message that lets user know if the numbers of levels in Position_ID is  not equal (!==) to Location_ID/4 asking to pick up if there's potentially missing data from a SET arm direction (or other)
+
+
+
