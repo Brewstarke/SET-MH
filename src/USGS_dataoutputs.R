@@ -21,7 +21,7 @@ SET.USGS$Contact_Email <- "astarke@tnc.org"
 
 colorder <- c(2, 27, 28, 3, 5, 1, 18, 19, 6, 25, 24, 26, 16, 17, 7:15)
 SET.USGS.TNC <- SET.USGS[,colorder]
-SET.USGS.TNC <- rename(SET.USGS.TNC, replace= c(Start_Date= "Sample_Date"))
+SET.USGS.TNC <- plyr::rename(SET.USGS.TNC, replace= c(Start_Date= "Sample_Date"))
 
 
 # Surface Accretion Data - for USGS data sheet ####
