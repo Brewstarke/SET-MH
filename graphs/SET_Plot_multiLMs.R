@@ -33,6 +33,7 @@ SET_Plot2 +
 	theme(legend.position= "bottom")
 
 	}
+SET_Plot_facetted()
 
 
 #### Overlay plot

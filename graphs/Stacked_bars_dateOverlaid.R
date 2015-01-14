@@ -21,7 +21,7 @@ MeanChange <- ddply(.data= MeanChange,
 		    summarize, 
 		    meanChange= round(mean(meanChange,na.rm=TRUE),digits= 2))
 
-MeanChange <- ddply(.data= MeanChange, 
+MeanChange <<- ddply(.data= MeanChange, 
 		    .(SET_Type, 
 		      Site_Name,
 		      Stratafication, 
@@ -61,6 +61,6 @@ SiteMeanIncrementalChangeCalc()
 	
 SET_Plot2 + 
 	geom_point(position = "jitter", aes(color= strftime(MeanChange$Date, "%Y/%m"))) + 
-	geom_path(aes(color= Site))) + 
+	
 		  	facet_wrap(Stratafication ~ SET_Type)
 	
