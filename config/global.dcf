@@ -3,8 +3,8 @@ cache_loading: TRUE
 munging: TRUE
 logging: FALSE
 load_libraries: TRUE
-libraries: reshape2, plyr, ggplot2, stringr, RODBC, xlsx, Hmisc,
-        xtable, ggthemes, scales, png, jpeg, RColorBrewer, dplyr
+libraries: reshape2,plyr, dplyr, ggplot2, stringr, RODBC, xlsx, Hmisc,
+        xtable, ggthemes, scales, png, jpeg, RColorBrewer
 as_factors: TRUE
 data_tables: FALSE
 recursive_loading: FALSE
