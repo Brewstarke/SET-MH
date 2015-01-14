@@ -58,7 +58,7 @@ meanslope.Pos <- ddply(.data= meanslope.Pin,
                      Stratafication, 
                      Position_ID, 
                      Location_ID), 
-                   summarize, 
+                   plyr::summarize, 
                    meanslope= round(mean(slope,na.rm=TRUE),digits= 3), 
                    seSlope= round(sqrt(var(slope,na.rm=TRUE)/length(na.omit(slope))), digits= 3)) # can be replaced by stder function
 
@@ -72,7 +72,7 @@ meanslope.Loc <- ddply(.data= meanslope.Pos,
                          Plot_Name,
                          Stratafication, 
                          Location_ID), 
-                       summarize, 
+											 plyr::summarize, 
                        meanslopes= round(mean(meanslope,na.rm=TRUE),digits= 3), 
                        seSlope= round(sqrt(var(meanslope,na.rm=TRUE)/length(na.omit(meanslope))), digits= 3)) # can be replaced by stder function
 
@@ -85,7 +85,7 @@ SET.site.means <- ddply(.data= SET.station.means,
                        .(Site_Name,
                          Stratafication,
                          SET_Type),
-                       summarize, 
+												plyr::summarize, 
                        meanslope= round(mean(meanslopes,na.rm=TRUE),digits= 3), 
                        seSlope= round(sqrt(var(meanslopes,na.rm=TRUE)/length(na.omit(meanslopes))), digits= 3)) # can be replaced by stder function
 
