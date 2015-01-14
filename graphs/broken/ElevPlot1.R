@@ -31,7 +31,7 @@ elevPlot1 +
             hjust= 0) +  
   labs(y = "Average change in marsh elevation (mm/year)", 
        x = "Average surface accretion (mm/year)") + 
-  annotate("text", x = 0.35, y = 3, 
+  annotate("text", x = 1, y = 3, 
            label = "10-yr average sea level rise trend", 
            angle = 0) +
 #   annotate("text", x = 5, y= 5.1, 
