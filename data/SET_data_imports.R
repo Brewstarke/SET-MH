@@ -4,7 +4,7 @@
 # ProjectTemplate automatically runs this script, importing the dataframes below into the R workspace
 #
 ###
-require(RODBC)
+library(RODBC)
 
 pathLoader <- function(){
 	if(Sys.info()['sysname'] == "Windows"){
