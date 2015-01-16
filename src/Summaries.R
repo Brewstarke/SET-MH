@@ -41,5 +41,5 @@ SummaryTemp <- melt(data= SummaryTable,
 
 SummaryTemp <- dcast(data=SummaryTemp, formula= Site_Name + Stratafication ~ ...)
 
-write.xlsx(x= SummaryTemp2, file="reports/Site_Summary_Table.xls", append= FALSE)
+write.xlsx(x= SummaryTemp, file="reports/Site_Summary_Table.xls", append= FALSE)
 
