@@ -1,28 +1,22 @@
+## @knitr DataLoad
+
+
 ###
-#
 # Data importing from SET_Monitoring_Database 'Backend Data Storage File' currently SET_DB_BE_ver_2.92_TNC_Master
 # ProjectTemplate automatically runs this script, importing the dataframes below into the R workspace
 #
 ###
+
 library(RODBC)
 
-pathLoader <- function(){
-	if(Sys.info()['sysname'] == "Windows"){
-		SET.DB.path <<- "C:\\Users\\astarke\\Documents\\Marsh-Wetlands\\SET_Monitoring_Database\\Database_storage\\SET_DB_BE_ver_2.94_TNC_Master.mdb"
-	} else if (Sys.info()['sysname'] == "Ubuntu"){ # Check this on my machine-
-		SET.DB.path <<-  file.choose()
-	} else SET.DB.path <<- file.choose()
-	
-	SET.DB.path
-}	
+SET.DB.path <- "T:\\Coastal\\Marsh-Wetlands\\SET-MH_project\\SET_Data\\SET_Monitoring_Database\\Database_storage\\SET_DB_BE_ver_2.94_TNC_Master_July23.mdb"
 
-pathLoader() # Load in the path to the Database Back End.
 
 SET.DB <- odbcConnectAccess2007(SET.DB.path)
 
+## @knitr DataTableLoad
 
 ### Pull in the tables of interest containing data needed for analysis ====
-
 #Location data- i.e. study sites and stations within sites
 Sites <- sqlFetch(SET.DB, sqtable= "tbl_Sites")
 Locations <- sqlFetch(SET.DB, sqtable= "tbl_Locations")
@@ -44,6 +38,7 @@ SA_Layers <- sqlFetch(SET.DB, sqtable= "tbl_Feldspar_Layers")
 
 close(SET.DB) #close the connection to the Access SET database.
 
+## @knitr quiet
 ### END OF SET_data_imports.R script ###
 #
 # The datatables created here are then 'munged' in the scripts found in the ~/munge folder
