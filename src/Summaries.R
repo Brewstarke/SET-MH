@@ -1,8 +1,9 @@
 ## Summary Tables and Plots
-require(xlsx)
-require(reshape2)
-require(plyr)
-require(dplyr)
+library(xlsx)
+library(reshape2)
+library(plyr)
+library(dplyr)
+library(tidyr)
 
 SummaryTable <- join(y= SA.site.means,  
 		     x= SET.site.means, 
@@ -11,10 +12,17 @@ SummaryTable <- join(y= SA.site.means,
 
 SummaryTable$SubSurface_change <- SummaryTable$Mean_elevation_change - SummaryTable$Mean_Accretion_Rate
 
-SiteVisits <- SET.data %>%
-		group_by( Site_Name, Stratafication, SET_Type ) %>%
-		summarise("Sample N" = length(unique(Start_Date)))
+attr(SummaryTable, "doc")  <- "Summary Table is the accumulation of SET and MH mean rates and associated SE's. 
+				SubSurface_change: mean elevation change - mean accretion rate
+				Sample N: number of SET readings"
 
+
+SiteVisits <- SET.data.Melt %>%
+	#ungroup() %>%
+	group_by(Site_Name, Stratafication, SET_Type) %>%
+	dplyr::summarise('Sample N' = n_distinct(Start_Date))
+
+# Add site visits 
 SummaryTable <- join(x= SiteVisits, 
 		     y= SummaryTable, 
 		     by= c("Stratafication", "Site_Name", "SET_Type"))
@@ -35,11 +43,14 @@ PlotSummaryTable <- join(y= SA.plot.means,
 
 write.xlsx(x= PlotSummaryTable, file="reports/Stations_Summary_Table.xls", append= FALSE)
 
-SummaryTemp <- melt(data= SummaryTable, 
+SummaryTable_wide <- melt(data= SummaryTable, 
 		    id.var= c("Site_Name", "Stratafication", "SET_Type"), 
 		    measure.var= c("Sample N", "Mean_elevation_change", "SE_ofmeanrate", "Mean_Accretion_Rate", "SE of mean Accrretion mm/yr", "SubSurface_change"), na.rm=TRUE)
 
-SummaryTemp <- dcast(data=SummaryTemp, formula= Site_Name + Stratafication ~ ...)
+SummaryTable_wide <- dcast(data=SummaryTable_wide, formula= Site_Name + Stratafication ~ ...)
 
-write.xlsx(x= SummaryTemp, file="reports/Site_Summary_Table.xls", append= FALSE)
+write.xlsx(x= SummaryTable_wide, file="reports/Site_Summary_Table.xls", append= FALSE)
 
+
+# save environment for app-
+save.image("~/R_Code/SET-MH_Analysis/.RData")

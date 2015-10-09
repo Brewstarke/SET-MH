@@ -9,16 +9,6 @@ require(plyr)
 require(xlsx)
 
 
-slopeSAer <- function(e) {                                              
-    if(nrow(e) < 2) {return(data.frame(intercept = NA, slope = NA))     # if number of rows (data points) is less than 2 return NA's
-  } else { 
-    # if there's enough data take data = e (which will be subsetted in later functions) then...
-    p <-  coef(lm(plug_mean ~ Dec_year, data = e))                    # regress the plug depth against time (decimal years) and return the coefficients of the regression- slope and intercept
-    p <- data.frame(slope = round(p[2], digits= 4))                   # subset out just the slope coefficient from the object p
-  }
-  
-} # this function is also found in '/helpers.R' 
-
 #*************************************************************
 # 1.)
 # Calculate slope using function slopeSAer created above ----
@@ -30,7 +20,7 @@ SA.plug.means <- ddply(.data= SA.data.M, # Average depth for each plug cut
                          Start_Date, 
                          Location_ID,
                          Plot_Name),
-											 plyr::summarize,
+		       plyr::summarize,
                        Dec_year= mean(DecYear),
                        plug_mean= round(mean(Accretion), digits= 3),
                        plug_se= round(sqrt(var(Accretion,na.rm=TRUE)/length(na.omit(Accretion))))
@@ -44,8 +34,6 @@ meanslope.Accret <- ddply(.data= SA.plug.means,
                             Layer_Label, 
                             Plot_Name), 
                           slopeSAer)
-
-
 
 SA.plot.means <- ddply(.data= meanslope.Accret,
                        .(Location_ID, 
@@ -68,7 +56,7 @@ SA.plot.means <- SA.plot.means[,3:36]
 SA.site.means <- plyr::ddply(.data=SA.plot.means, 
                           .(Site_Name, 
                             Stratafication), # Same as above, add Layer_ID as it's unique to the station level (effectively averaging the plots from above)
-														 plyr::summarize, 
+			     plyr::summarize, 
                           site_Mean= round(mean(plot_mean, na.rm=TRUE), digits= 3), 
                           site_SE= round(stder(plot_mean), digits= 3)
                        )
