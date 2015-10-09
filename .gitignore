@@ -13,7 +13,6 @@
 .Rhistory.u1conflict
 Thumbs.db
 .gitignore
-reports/
 README
 /RI_Talk
 /Scratch
@@ -28,3 +27,5 @@ Data_methods.pdf
 Data_methods.html
 packrat/lib*/
 /reports
+/figure
+/logs
