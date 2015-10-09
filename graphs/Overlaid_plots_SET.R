@@ -9,7 +9,7 @@ SET_Plot_overlay2 <- function(SET_Type = 'Rod SET', highlightSite = NULL, title)
 	require(reshape2)
 	
 	title <- title
-	data <- SET.data.M[(SET.data.M$SET_Type == SET_Type),] # Subset the data type
+	data <- SET.data.Melt[(SET.data.Melt$SET_Type == SET_Type),] # Subset the data type
 	
 	# Add control structure to ensure Site is available to select.
 	
@@ -17,11 +17,11 @@ SET_Plot_overlay2 <- function(SET_Type = 'Rod SET', highlightSite = NULL, title)
 	
 	SET_Plot2 <- ggplot(data= data, aes(y = Raw, 
 					    x = Date, 
-					    group= interaction(Site_Name, 
+					    color= interaction(Site_Name, 
 					    		   Stratafication, 
 					    		   SET_Type, 
 					    		   sep= " "), 
-					    color = highlight,
+					    #color = highlight,
 					    alpha= 0.5)) 
 	
 	SET_Plot2 + 

@@ -8,8 +8,8 @@ SET_Plot_grid <- function(highlightSite = NULL, title)
 	
 	title <- title
 	# 	data <- SET.data.M[(SET.data.M$SET_Type == SET_Type),] # Subset the data type - removed to add faceting on this variable
-	data <- SET.data.M
-	SiteOrder <- unique(SET.data.M$Site_Name)[c(9,8,1:7)]
+	data <- SET.data.Melt
+	SiteOrder <- unique(SET.data.Melt$Site_Name)[c(9,8,1:7)]
 	data$Site_Name <- factor(data$Site_Name, levels= SiteOrder) 
 	
 	# Add control structure to ensure Site is available to select.
@@ -31,13 +31,13 @@ SET_Plot_grid <- function(highlightSite = NULL, title)
 		stat_smooth(method = glm, size = 1,  se = FALSE) + 
 		stat_smooth(method= loess, se= FALSE, size= .5, alpha = 1) + 
 		
-		facet_wrap( ~ Site_Name, ncol = 2) +
+		facet_wrap( ~ Site_Name, ncol = 3) +
 		scale_x_date(breaks = "6 months", 
 			     labels=date_format("%Y"), 
-			     limits = as.Date(c('2011-05-01','2014-12-01'))) + 
+			     limits = as.Date(c('2008-05-01','2014-12-01'))) + 
 		
 		theme_bw(base_family="serif") + 
-		theme(legend.position= "none") +
+		theme(legend.position= "none", axis.text.x  = element_text(angle=90, vjust=0.5, size=10)) +
 		
 		labs(list(title = title, 
 			  y = "Relative Elevation of marsh surface (mm)", 

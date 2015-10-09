@@ -6,7 +6,7 @@ SET_Plot_overlay3 <- function(SET_Type = 'Rod SET', highlightSite = NULL, title=
 	require(reshape2)
 	
 	title <- title
-	data <- SET.data.M[(SET.data.M$SET_Type == SET_Type),] # Subset the data type
+	data <- SET.data.Melt[(SET.data.Melt$SET_Type == SET_Type),] # Subset the data type
 	
 	# Add control structure to ensure Site is available to select.
 	
