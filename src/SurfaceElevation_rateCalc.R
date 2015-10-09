@@ -7,8 +7,6 @@
 # 
 # Picks up from 'munge/Data_munge.R' to analyze 'cleaned' data
 #
-# Required Packages -----
-
 
 ### Analysis -----
 # DO SEPARATE REGRESSIONS FOR EACH PIN WITH RESPONSE BEING CHANGE IN MM OF THAT PIN AND REGRESSOR BEING DECIMAL YEARS
@@ -35,64 +33,69 @@
 #*************************************************************
 # 1.)
 # Calculate slope (height regressed against time) for each pin using function slopeer created above ----
-# 
-meanslope.Pin <- ddply(SET.data.M, .(SET_Type, 
-                                     Site_Name, 
-                                     Plot_Name,
-                                     Position_ID, 
-                                     Stratafication, 
-                                     variable, 
-                                     Location_ID), slopeer)
-
-#dt <- join(x= meanslope.Pin, y= StudySites, by= "Location_ID")
+meanslope.Pin <- SET.data.Melt %>%
+	group_by(SET_Type, 
+		 Site_Name, 
+		 Plot_Name,
+		 Position_ID, 
+		 Stratafication,
+		 Location_ID,
+		 variable) %>%
+	do(slopeer(.))
 
 #*************************************************************
 # 2.)
 # Summarize slopes by Position_ID ----
 # (unique to site & station & SET arm position) by calculating mean slope and SE of slope means
 
-meanslope.Pos <- ddply(.data= meanslope.Pin, 
-                   .(SET_Type, 
-                     Site_Name,
-                     Plot_Name,
-                     Stratafication, 
-                     Position_ID, 
-                     Location_ID), 
-                   plyr::summarize, 
-                   meanslope= round(mean(slope,na.rm=TRUE),digits= 3), 
-                   seSlope= round(sqrt(var(slope,na.rm=TRUE)/length(na.omit(slope))), digits= 3)) # can be replaced by stder function
+meanslope.Pos <- meanslope.Pin %>%
+	group_by(SET_Type, 
+		 Site_Name, 
+		 Plot_Name,
+		 Position_ID, 
+		 Stratafication,
+		 Location_ID) %>% 
+	dplyr::summarise(meanslope = round(mean(slope,na.rm=TRUE),digits= 3), 
+		  seSlope = round(sqrt(var(slope,na.rm=TRUE)/length(na.omit(slope))), digits= 3))
 
 #*************************************************************
 # 3.) 
 # Calculate mean by Location_ID (Station) by averaging the mean slopes of each SET arm Position (which consists of mean pin slopes)
 # 
-meanslope.Loc <- ddply(.data= meanslope.Pos, 
-                       .(SET_Type, 
-                         Site_Name,
-                         Plot_Name,
-                         Stratafication, 
-                         Location_ID), 
-											 plyr::summarize, 
-                       meanslopes= round(mean(meanslope,na.rm=TRUE),digits= 3), 
-                       seSlope= round(sqrt(var(meanslope,na.rm=TRUE)/length(na.omit(meanslope))), digits= 3)) # can be replaced by stder function
 
+meanslope.Loc <- meanslope.Pos %>% 
+	group_by(SET_Type, 
+		 Site_Name,
+		 Plot_Name,
+		 Stratafication, 
+		 Location_ID) %>% 
+	dplyr::summarise(meanslopes= round(mean(meanslope,na.rm=TRUE),digits= 3),
+		  seSlope= round(sqrt(var(meanslope,na.rm=TRUE)/length(na.omit(meanslope))), digits= 3))
+
+#***********************************************************
+# 4.) 
+# Rejoin data to allow for summaries and interpretations. 
+#  Join the station means to the station Location data. 
+#
 SET.station.means <- join(x= meanslope.Loc, 
                           y= StudySites, 
                           by= "Location_ID", 
                           type= "left")[, c(1:4, 6:7, 19:24)] #[section indexes the columns/variables wanted in the final dataframe]
 
+# Continue summarizing down to the Site level.
+
 SET.site.means <- ddply(.data= SET.station.means, 
                        .(Site_Name,
                          Stratafication,
                          SET_Type),
-												plyr::summarize, 
+		plyr::summarize, 
                        meanslope= round(mean(meanslopes,na.rm=TRUE),digits= 3), 
                        seSlope= round(sqrt(var(meanslopes,na.rm=TRUE)/length(na.omit(meanslopes))), digits= 3)) # can be replaced by stder function
+
 
 SET.site.means <- plyr::rename(SET.site.means, replace=c(meanslope = "Mean_elevation_change", seSlope = "SE_ofmeanrate"))
 
 ## Output an excel file containing SET elevations.
 
 write.xlsx(x=SET.site.means, file="reports/SETelevrate.xls")
-
 
