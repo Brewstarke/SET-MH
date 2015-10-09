@@ -10,7 +10,7 @@
 # for ProjectTemplate to properly run you must set the working directory to the folder 
 # that contains this script (~/SET-MH_Analysis if folder name went unchanged)
 
-setwd("SET-MH_Analysis") 
+#setwd("SET-MH_Analysis") 
 
 library(ProjectTemplate)
 
@@ -19,7 +19,7 @@ load.project()
 
 # Running the above triggers the data loading script "~/data/SET_data_imports.R"
 # After loading the raw data, a 'munge' script "~/munge/SET_data_munge.R" runs 
-# to clean data, rename some variables
+# to clean data, rename some variables and organize the structure of the data as needed.
 
 # SET data analysis pulled from the ~/src folder
 ## Need to update these source scripts ####
