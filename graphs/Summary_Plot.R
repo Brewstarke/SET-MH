@@ -2,9 +2,9 @@
 library(dplyr)
 library(ggvis)
 
-SET.data.M %>%
+SET.data.Melt %>%
  	group_by(Site_Name, Stratafication, Plot_Name) %>%
-	summarise(change = slopeer(SET.data.M))
+	summarise(change = slopeer(SET.data.Melt))
 	
 
 slopeer <- function(d) {

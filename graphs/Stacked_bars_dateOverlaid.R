@@ -1,7 +1,10 @@
-
+## 
+#  Not sure where this was going....
+#
+###
 # Calculate the mean change across the site for each visit
 SiteMeanIncrementalChangeCalc <- function(){
-MeanChange <- ddply(.data= SET.data.M, 
+MeanChange <- ddply(.data= SET.data.Melt, 
 		    .(SET_Type, 
 		      Site_Name,
 		      Plot_Name,
@@ -53,7 +56,9 @@ SiteMeanIncrementalChangeCalc()
 	SET_Plot <- ggplot(data= MeanChange, aes(x= Site_Name, fill= strftime(MeanChange$Date, "%Y/%m"), y = meanChange)) 
 		
 	
-	SET_Plot + geom_bar(stat = "identity") + facet_wrap(Stratafication ~ SET_Type)
+	SET_Plot + geom_bar(stat = "identity") + 
+		facet_wrap(Stratafication ~ SET_Type) + 
+		theme(legend.position= "right", axis.text.x  = element_text(angle=90, vjust=0.5, size=10))
 
 
 

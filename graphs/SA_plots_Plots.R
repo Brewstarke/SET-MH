@@ -33,7 +33,7 @@ SA_Plot_grid <- function(highlightSite = NULL, title)
 		facet_wrap( ~ Site_Name, ncol = 3) +
 		scale_x_date(breaks = "1 year", 
 			     labels=date_format("%Y"), 
-			     limits = as.Date(c('2008-10-01','2014-10-01'))) + 
+			     limits = as.Date(c('2008-10-01','2015-10-01'))) + 
 		theme_bw(base_family="serif") + 
 		theme(legend.position= "none") +
 		

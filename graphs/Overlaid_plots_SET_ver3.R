@@ -1,4 +1,4 @@
-SET_Plot_overlay4 <- function(SET_Type = 'Rod SET', highlightSite = NULL, title= "ADD A TITLE")
+SET_Plot_overlay4 <- function(SET_Type = 'Rod SET', highlightSite = NULL, title= "ADD A TITLE!!")
 {
 	require(ggplot2)
 	require(ggthemes)
@@ -6,11 +6,11 @@ SET_Plot_overlay4 <- function(SET_Type = 'Rod SET', highlightSite = NULL, title=
 	require(reshape2)
 	
 	title <- title
-	data <- SET.data.M[(SET.data.M$SET_Type == SET_Type),] # Subset the data by SET type
+	data <- SET.data.Melt[(SET.data.Melt$SET_Type == SET_Type),] # Subset the data by SET type
 	
 	# Add control structure to ensure Site is available to select.
 	
-	data$highlight <-  data$Site_Name == highlightSite
+#	data$highlight <-  data$Site_Name == highlightSite
 	
 	SET_Plot2 <- ggplot(data= data, aes(y = change, 
 					    x = Date)

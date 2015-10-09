@@ -17,7 +17,7 @@ SET_Plot_facetted <- function()
 	require(plyr)
 	require(reshape2)
 	
-SET_Plot2 <- ggplot(data=SET.data.M, aes(y = change, 
+SET_Plot2 <- ggplot(data=SET.data.Melt, aes(y = change, 
                                          x = Date, color= interaction(Stratafication, SET_Type, sep= " "))) 
 
 SET_Plot2 + 
@@ -46,7 +46,7 @@ SET_Plot_overlay <- function(SET_Type = 'Rod SET', highlightSite = NULL)
 	require(reshape2)
 	
 	
-	data <- SET.data.M[(SET.data.M$SET_Type == SET_Type),] # Subset the data type
+	data <- SET.data.Melt[(SET.data.Melt$SET_Type == SET_Type),] # Subset the data type
 	
 	# Add control structure to ensure Site is available to select.
 
