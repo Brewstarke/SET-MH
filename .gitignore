@@ -14,7 +14,6 @@
 Thumbs.db
 .gitignore
 reports/
-.gitignore
 README
 /RI_Talk
 /Scratch
@@ -27,3 +26,5 @@ Marsh_SET-MH.Rproj
 AccretionVelevation.pdf
 Data_methods.pdf
 Data_methods.html
+packrat/lib*/
+/reports
