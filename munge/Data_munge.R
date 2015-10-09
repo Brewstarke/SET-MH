@@ -3,14 +3,10 @@
 # Munge the data tables pulled in from Access using the SET_data_imports script found in the ~/data folder. 
 # 
 ### 
-# Required Packages -----
-library(reshape2)
-library(RODBC)
-library(plyr)
-
+## @knitr MungeTables
 #SQL type joins to flatten the tables from the database. ----
 
-#Study Sites with Locations data --Location_ID is analagous to Plot_Name 
+#Study Sites with Locations data --Location_ID is a numeric key analagous to Plot_Name 
 StudySites <- join(Sites, Locations, by="Site_ID", type="inner") 
 
 #Surface Accretion data 
@@ -36,20 +32,10 @@ rm(Events,
    SET,
    SETdata,   
    Samplings,
-   Sites
+   Sites,
+   Locations
    )
-
-### HAVE TWO COMPLETE DATASETS AT THIS POINT ####
-# One set contains SET data with location, date and pin height data
-# One has Surface Accretion data with location, date and accretion data
-capwords <- function(s, strict = FALSE) {
-	cap <- function(s) paste(toupper(substring(s, 1, 1)),
-				 {
-				 	s <- substring(s, 2); if(strict) tolower(s) else s
-				 	},
-				 sep = "", collapse = " " )
-	sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))
-}
+## @knitr MungeSETVariables
 
 
 SET.data$Stratafication <- as.character(SET.data$Stratafication)
@@ -82,7 +68,7 @@ keeps <- c("SET_Type",
            "Coord_System",
            "UTM_Zone",
            "Datum")
-# Identifiers used for plyr ----
+# Identifiers used for reshape ----
 iders <- c("SET_Type", 
            "Position_ID", 
            "Location_ID", 
@@ -100,19 +86,21 @@ iders <- c("SET_Type",
            "Datum")
 
 SET.data <- SET.data[keeps] 
+SET.data <- tbl_df(SET.data)
 # Use reshape2 to melt wide table down to a long format (really only transposing the pin readings) =====
-SET.data.M <- melt(SET.data, id= iders, na.rm=TRUE)
+SET.data.Melt <- melt(SET.data, id= iders, na.rm=TRUE)
 
+## @knitr Dates
 ###
 #  Munge dates to create sample date and establishment date---- 
 #  
 # Rename 'Start_Date' to just 'Date' to remove confusing variable name
-SET.data.M$Date <- as.Date((SET.data.M$Start_Date))
+SET.data.Melt$Date <- as.Date((SET.data.Melt$Start_Date))
 
 # Create column of 'establishment dates'= EstDate ----
 # Date the site was first established
 # Use ddply to split by Location_ID and find the first date read, record that in -$EstDate
-SET.data.M <-ddply(SET.data.M,
+SET.data.Melt <-ddply(SET.data.Melt,
                    .(Location_ID),
                    transform,
                    EstDate= (as.Date(min(Date)))) 
@@ -120,18 +108,18 @@ SET.data.M <-ddply(SET.data.M,
 # Create variable DecYear- decimal years - in SET data, for regression analysis. 
 # difftime- calculates the time difference between t1 and t2 in units identified
 
-SET.data.M$DecYear <- round((((as.numeric(difftime(SET.data.M$Date, SET.data.M$EstDate, units = "days"))))/365),3)
-SET.data.M <- plyr::rename(SET.data.M, c(value="Raw")) #rename 'value' to 'Raw'
-SET.data.M <- SET.data.M[order(SET.data.M$Start_Date),]
+SET.data.Melt$DecYear <- round((((as.numeric(difftime(SET.data.Melt$Date, SET.data.Melt$EstDate, units = "days"))))/365),3)
+SET.data.Melt <- plyr::rename(SET.data.Melt, c(value="Raw")) #rename 'value' to 'Raw'
+SET.data.Melt <- SET.data.Melt[order(SET.data.Melt$Start_Date),]
 
 # Calculates a 'change' used for plots primarily- regressions are run through 'raw' data to reduce chance of error.
-SET.data.M <- ddply(SET.data.M, 
+SET.data.Melt <- ddply(SET.data.Melt, 
                     .(Position_ID,
                       variable), 
                     mutate, 
                     change = as.numeric(Raw-Raw[1]),
 		    incrementalChange = c(NA, diff(change)))
-
+## @knitr SAdata
 ###
 # Surface Accretion  -----
 #
@@ -170,8 +158,6 @@ SA.data.M$DecYear <- round((((as.numeric(difftime(SA.data.M$Start_Date, SA.data.
 SA.data.M <- plyr::rename(SA.data.M, c(value="Accretion")) #rename 'value' to 'Accretion'
 
 
-
-stder <- function(x){ sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))}
 
 ### All clear to hear-- 07Mar2014- AFS -----
 
