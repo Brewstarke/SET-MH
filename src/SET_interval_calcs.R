@@ -48,3 +48,27 @@ compileSETregressions <- function(wholeData){
 regressionsSET <- compileSETregressions(SET.data.Melt)
 
 
+# Plots
+
+
+regressionsSET %>% 
+	filter(Site_Name == "Pine Neck") %>% 
+	filter(SET_Type == "Rod SET") %>% 
+	ggplot(aes(x = Date, y = beta))+
+	#geom_line()+
+	geom_point()+
+	geom_smooth()+
+	facet_grid(Plot_Name ~ Position_Name)
+
+
+
+
+
+
+
+
+
+
+
+
+
