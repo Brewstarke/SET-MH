@@ -16,7 +16,7 @@ runningRegressionSETs <- function(SETdata){
 	data$beta = rep(NA, ts_length)
 	data$SE_beta = rep(NA, ts_length)
 	for(i in 2:ts_length) {
-		regress <- lm(DecYear ~ change, data = data[1:i,])
+		regress <- lm(change ~ DecYear, data = data[1:i,])
 		data$beta[i] <- coef(regress)[2]
 		data$SE_beta[i] <- summary(regress)$coef[4]
 	}

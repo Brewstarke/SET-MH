@@ -44,7 +44,7 @@ renderPlot({
 		geom_smooth()+
 		theme_bw()+
 		facet_grid(Plot_Name ~ Position_Name) + 
-		labs(y = "Rate of change (mm/yr)", title = "Incremental Regression Analysis")
+		labs(y = "Rate of change (mm/yr)", title = "Incremental Regression Analysis") 
 
 
   
