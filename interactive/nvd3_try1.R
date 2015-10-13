@@ -13,7 +13,7 @@ opts_chunk$set(tidy = F, results = 'asis', comment = NA)
 
 # Scatter chart of mean elevations
 
-stationSE <- nPlot(Date ~ Raw, group= 'Position_ID', data= SET.data.M, type= 'scatterChart')
+stationSE <- nPlot(Date ~ change, group= 'Position_ID', data= SET.data.Melt, type= 'scatterChart')
 stationSE$xAxis(axisLabel = 'Date')
 
 stationSE$print("SEplot")
