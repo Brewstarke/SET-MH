@@ -1,0 +1,53 @@
+---
+title: "Regression Analysis"
+author: "Adam Starke"
+date: "October 13, 2015"
+output: html_document
+runtime: shiny
+---
+The following is a preliminary examination of the elevation trends as measured using the SET-MH technique.
+
+
+```{r, echo=FALSE, echo=FALSE, message=FALSE, fig.align='center', fig.height=8, fig.width=8, warning=FALSE, error=FALSE}
+library(shiny)
+library(ggvis)
+library(xtable)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+
+load('.Rdata')
+# List of study sites to filter plots for...
+studysites <- unique(SummaryTable$Site_Name)
+names(studysites) <- studysites
+
+inputPanel(
+  selectInput("site", label = "Study Site:",
+              choices = names(studysites)),
+  selectInput("SETtype", label = "Type of SET",
+  	    choices = c("Rod SET", "Shallow SET"))#,
+#   selectInput("direction", label = "Arm Diretion",
+#   	    choices = (1:8), multiple = TRUE)
+  
+ 
+)
+
+renderPlot({
+	regressionsSET %>% 
+		filter(Site_Name == input$site) %>% 
+		filter(SET_Type == input$SETtype) %>% 
+		#filter(Arm_Direction == input$direction) %>% 
+		ggplot(aes(x = Date, y = beta, stroke = variable))+
+		geom_line(alpha = 0.8)+
+		geom_point(alpha = 0.8)+
+		geom_smooth()+
+		theme_bw()+
+		facet_grid(Plot_Name ~ Position_Name) + 
+		labs(y = "Rate of change (mm/yr)", title = "Incremental Regression Analysis")
+
+
+  
+}, height = 800)
+```
+
