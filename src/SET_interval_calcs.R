@@ -10,13 +10,15 @@ library(dplyr)
 rollSETregress <- SET.data.Melt %>% 
 	arrange(Date, variable) %>% 
 	dplyr::select(Site_Name, SET_Type, Plot_Name, Stratafication, Position_ID, Date, variable, DecYear, change) %>% 
-	# filter(Position_ID == '20130215094730-774740099.906921') %>% 
- 	group_by(Position_ID, variable) 
- 	do(beta = for(i in 2:length(.)) .[i] <- coef(lm(DecYear ~ change, data = .[1:i,]))[2])
+	# filter(Position_ID == '20130215094730-774740099.906921', variable == "Pin2") %>% 
+	group_by(Site_Name, SET_Type, Plot_Name, Stratafication, Position_ID, Position_ID, variable) 
 
- 	
-rollSETregress %>% 
-	xtabs( ~ Site_Name, data = .)
+rollSETregress_subsetpin <- SET.data.Melt %>% 
+	arrange(Date, variable) %>% 
+	dplyr::select(Site_Name, SET_Type, Plot_Name, Stratafication, Position_ID, Date, variable, DecYear, change) %>% 
+	filter(Position_ID == '20130215094730-774740099.906921' ,variable == "Pin2") %>% 
+	group_by(Site_Name, SET_Type, Plot_Name, Stratafication, Position_ID, Position_ID, variable) 
+
 
 
 runningRegressionSETs <- function(SETdata){
@@ -26,14 +28,56 @@ runningRegressionSETs <- function(SETdata){
 # 	positions <- unique(data$Position_ID)
 	ts_length <- length(data$Date)
 	
+	data$beta = rep(NA, ts_length)
+	for(i in 2:ts_length) data$beta[i] <- coef(lm(DecYear ~ change, data = data[1:i,]))[2]
+	data
+}
+
+
+
+betaRuns3 <- runningRegressionSETs(rollSETregress) # Full set of data
+
+
+betaRuns_subset <- runningRegressionSETs(rollSETregress_subsetpin) # Subset of the full run
+
+beatRuns2_subsetCompare <- betaRuns2 %>% 
+	arrange(Date, variable) %>% 
+	dplyr::select(Site_Name, SET_Type, Plot_Name, Stratafication, Position_ID, Date, variable, DecYear, change, beta) %>% 
+	filter(Position_ID == '20130215094730-774740099.906921' ,variable == "Pin2") %>% 
+	group_by(Position_ID, variable) 
+
+
+
+rollSETregress_subset %>% 
+	xtabs( ~ Site_Name, data = .)
+
+runningRegressionSETs <- function(SETdata){
+	data <-  SETdata
+	# 	# create a list of unique positions and pins. 
+	
+		data$ID <- paste(Position_ID, variable)
+		IDs <- unique(data$ID)
+	for(i in 1:length(IDs)){
+		temp <- filter(data, ID == IDs[i])
+		
+		
+	}
+	ts_length <- length(data$Date)
+	
 	SETdata$beta = rep(NA, ts_length)
-	for(i in 2:ts_length) SETdata$beta[i] <- coef(lm(DecYear ~ change, data = SETdata[1:i,]))[2]
+	for(t in 2:ts_length) SETdata$beta[t] <- coef(lm(DecYear ~ change, data = SETdata[1:t,]))[2]
 	SETdata
 }
 
 
 
-b <- runningRegressionSETs(rollSETregress)
+
+
+
+
+### More sratch #########################
+#
+#
 
 
 
@@ -104,5 +148,5 @@ rollapply(z, width = 4,
 	  function(x) coef(lm(y ~ x, data = as.data.frame(x))),
 	  by.column = FALSE, align = "right")
 
-	
+##########################	
 	
