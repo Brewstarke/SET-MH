@@ -33,3 +33,9 @@ source('src/SurfaceAccretion_rateCalc.R')
 
 # Create a summary table of the sites being monitored. 
 source('src/Summaries.R')
+
+
+# Run running regression analysis
+source('src/SET_interval_calcs.R')
+
+save.image('.RData')
