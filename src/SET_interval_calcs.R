@@ -9,7 +9,7 @@ runningRegressionSETs <- function(SETdata){
 	# 
 	
 	data <-  SETdata
-# 	# create a list of unique positions and pins.
+# 	create a list of unique positions and pins.
 # 	pins <- unique(data$variable)
 # 	positions <- unique(data$Position_ID)
 	ts_length <- length(data$Date)
@@ -62,6 +62,7 @@ regressionsSET %>%
 
 
 
+	
 
 
 
