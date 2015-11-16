@@ -9,7 +9,7 @@
 
 library(RODBC)
 
-SET.DB.path <- "T:\\Coastal\\Marsh-Wetlands\\SET-MH_project\\SET_Data\\SET_Monitoring_Database\\Database_storage\\SET_DB_BE_ver_2.94_TNC_Master_July23.mdb"
+SET.DB.path <- "T:/Coastal/Marsh-Wetlands/SET-MH_project/SET_Data/SET_Monitoring_Database/Database_storage/SET_DB_BE_ver_2.94_TNC_Master.mdb"
 
 
 SET.DB <- odbcConnectAccess2007(SET.DB.path)
