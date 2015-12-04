@@ -1,7 +1,7 @@
 ### Attempt to calculate the change in error of linear regression across time intervals (rolling linear regression)
 library(zoo)
 library(dplyr)
-
+library(ggvis)
 
 runningRegressionSETs <- function(SETdata){
 	###
@@ -47,6 +47,11 @@ compileSETregressions <- function(wholeData){
 # Full SET dataset 
 regressionsSET <- compileSETregressions(SET.data.Melt)
 
+# Subset regression data
+intervalSET <- regressionsSET %>% 
+	select(SET_Type, Site_Name, Date, Plot_Name, Arm_Direction, beta, SE_beta)
+
+save(intervalSET, SummaryTable, file = 'RegressionAnalysis/regress.RData')
 
 # Plots
 
@@ -61,7 +66,15 @@ regressionsSET %>%
 	facet_grid(Plot_Name ~ Position_Name)
 
 
-
+regressionsSET %>% 
+	filter(Site_Name == "Pine Neck") %>% 
+	filter(SET_Type == "Rod SET") %>%
+	filter(!is.na(beta)) %>% 
+	ggvis(x = ~Date, y = ~beta) %>%
+	layer_points() %>% 
+	layer_smooths(se = TRUE) %>% 
+	add_tooltip(function(df) round(df$beta, digits =2), 'hover') %>% 
+	scale_numeric("y", trans = "log10")
 	
 
 
