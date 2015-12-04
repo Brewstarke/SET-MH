@@ -26,24 +26,54 @@ inputPanel(
   selectInput("site", label = "Study Site:",
               choices = names(studysites)),
   selectInput("SETtype", label = "Type of SET",
-  	    choices = c("Rod SET", "Shallow SET"))#,
+  	    choices = c("Rod SET", "Shallow SET")),
+  actionButton("exclude_toggle", label = "Exclude data points:"),
+  actionButton("exclude_reset", label = "Reset Excludes"),
+ 
+   plotOutput("plot1", height = 350,
+        click = "plot1_click",
+        brush = brushOpts(
+          id = "plot1_brush"
+        )
 #   selectInput("direction", label = "Arm Diretion",
 #   	    choices = (1:8), multiple = TRUE)
   
  
 )
 
-renderPlot({
+vals <- reactiveValues(
+	keeprows = rep(TRUE, nrow(regressionsSET))
+)
+
+output$plot1 <- renderPlot({
 		
-	regressionsSET %>% 
-		filter(Site_Name == input$site) %>% 
-		filter(SET_Type == input$SETtype) %>% 
+	tmpdata <- regressionsSET %>%
+		filter(Site_Name == input$site) %>%
+		filter(SET_Type == input$SETtype)
+		
+		keep <- tmpdata[vals$keeprows, ,drop = FALSE]
+		exclude <- tmpdata[!vals$keeprows, , drop = FALSE]
+		
+		keep %>% 
 		ggplot(aes(x = Date, y = beta))+
 		#geom_line()+
-		geom_point()+
-		geom_smooth()+
-		facet_grid(Plot_Name ~ Position_Name) +
-		scale_y_log10()
+		geom_point(alpha = 0.7)+
+		geom_smooth(stroke = 2)+
+		geom_path(alpha = 0.3) +
+		theme_bw() +
+			geom_point(data = exclude, shape = 21, alpha = 0.25)
+		#facet_grid(Plot_Name ~ Position_Name) +
+		#scale_y_log10()
+
+		
+	# regressionsSET %>% 
+	# 	filter(Site_Name == input$site) %>% 
+	# 	filter(SET_Type == input$SETtype) %>% 
+	# 	ggvis(x = ~Date, y = ~beta) %>%
+	# 	layer_points() %>% 
+	# 	layer_smooths() %>% 
+	# 	add_tooltip(function(df) df$beta, 'hover')
+
 
 
 
