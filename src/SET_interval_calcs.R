@@ -1,7 +1,7 @@
 ### Attempt to calculate the change in error of linear regression across time intervals (rolling linear regression)
 library(zoo)
 library(dplyr)
-library(ggvis)
+
 
 runningRegressionSETs <- function(SETdata){
 	###
@@ -45,6 +45,9 @@ compileSETregressions <- function(wholeData){
 
 
 # Full SET dataset 
+SET.data.Melt <- SET.data.Melt %>% 
+	filter(Date != '2008-08-08')
+
 regressionsSET <- compileSETregressions(SET.data.Melt)
 
 # Subset regression data
@@ -57,26 +60,26 @@ save(intervalSET, SummaryTable, file = 'RegressionAnalysis/regress.RData')
 
 
 regressionsSET %>% 
-	filter(Site_Name == "Pine Neck") %>% 
+	# filter(Site_Name == "East Creek") %>% 
 	filter(SET_Type == "Rod SET") %>% 
 	ggplot(aes(x = Date, y = beta))+
 	#geom_line()+
 	geom_point()+
 	geom_smooth()+
-	facet_grid(Plot_Name ~ Position_Name)
+	facet_grid(Site_Name ~ .)
 
-
-regressionsSET %>% 
-	filter(Site_Name == "Pine Neck") %>% 
-	filter(SET_Type == "Rod SET") %>%
-	filter(!is.na(beta)) %>% 
-	ggvis(x = ~Date, y = ~beta) %>%
-	layer_points() %>% 
-	layer_smooths(se = TRUE) %>% 
-	add_tooltip(function(df) round(df$beta, digits =2), 'hover') %>% 
-	scale_numeric("y", trans = "log10")
-	
-
+# 
+# regressionsSET %>% 
+# 	filter(Site_Name == "Pine Neck") %>% 
+# 	filter(SET_Type == "Rod SET") %>%
+# 	filter(!is.na(beta)) %>% 
+# 	ggvis(x = ~Date, y = ~beta) %>%
+# 	layer_points() %>% 
+# 	layer_smooths(se = TRUE) %>% 
+# 	add_tooltip(function(df) round(df$beta, digits =2), 'hover') %>% 
+# 	scale_numeric("y", trans = "log10")
+# 	
+# 
 
 
 
