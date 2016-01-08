@@ -8,7 +8,7 @@ runtime: shiny
 The following is a preliminary examination of the elevation trends as measured using the SET-MH technique.
 
 
-```{r, echo=FALSE, echo=FALSE, message=FALSE, fig.align='center', fig.height=8, fig.width=8, warning=FALSE, error=FALSE}
+```{r mainBody, echo=FALSE, error=FALSE, fig.align='center', fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
 library(shiny)
 library(ggvis)
 library(xtable)
@@ -29,17 +29,17 @@ inputPanel(
   	    choices = c("Rod SET", "Shallow SET")),
   actionButton("exclude_toggle", label = "Exclude data points:"),
   actionButton("exclude_reset", label = "Reset Excludes"),
- 
-   plotOutput("plot1", height = 350,
-        click = "plot1_click",
-        brush = brushOpts(
-          id = "plot1_brush"
-        )
+  plotOutput("plot1", height = 350, 
+	   width = 800,
+	   click = "plot1_click",
+	   brush = brushOpts(
+	   	id = "plot1_brush"
+	   	)
 #   selectInput("direction", label = "Arm Diretion",
 #   	    choices = (1:8), multiple = TRUE)
   
  
-)
+))
 
 vals <- reactiveValues(
 	keeprows = rep(TRUE, nrow(regressionsSET))
@@ -58,7 +58,7 @@ output$plot1 <- renderPlot({
 		ggplot(aes(x = Date, y = beta))+
 		#geom_line()+
 		geom_point(alpha = 0.7)+
-		geom_smooth(stroke = 2)+
+		geom_smooth()+
 		geom_path(alpha = 0.3) +
 		theme_bw() +
 			geom_point(data = exclude, shape = 21, alpha = 0.25)
