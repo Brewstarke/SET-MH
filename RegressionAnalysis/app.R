@@ -10,10 +10,8 @@
 library(shiny)
 library(dplyr)
 library(tidyr)
-library(metricsgraphics)
+library(ggplot2)
 
-
-library()
 
 load('regress.RData')
 
@@ -32,16 +30,34 @@ ui <- shinyUI(fluidPage(
    fluidRow(
       column(12,
              wellPanel(
-             	selectInput("site", label = "Study Site:",
+             	h4("Select a Site:"),
+             	selectInput("site", label = NULL,
       			 choices = names(studysites)),
-      			 selectInput("SETtype", label = "Type of SET",
-      			 	    choices = c("Rod SET", "Shallow SET"))
-      			       			 )
+      		selectInput("SETtype", label = NULL,
+      			 	    choices = c("Rod SET", "Shallow SET")),
+      		h4("Select a SET type:"),
+      		
+      		actionButton("exclude_toggle", label = "Toggle excluded data points:"), 
+      		actionButton("exclude_reset", label = "Reset Exclusions"),
+      		h4("Drag and double-click an area to zoom"),
+      		verbatimTextOutput("brush_info")
+      		)
+      			       			 
              ),
       
       # Show a plot of the generated distribution
       column(12,
-             metricsgraphicsOutput("plotMetrics", height = 650
+             plotOutput("plotgg", 
+             	   height = 650,
+             	   click = "plotgg_click",
+             	   dblclick = "plotgg_dblclick",
+             	   # Brushing options #-
+             	   brush = brushOpts(
+             	   	id = "plotgg_brush",
+             	   	resetOnNew = TRUE,
+             	   	opacity = 0.5,
+             	   	fill = 'green'
+             	   )
              	  )
       )
    )
@@ -51,30 +67,88 @@ ui <- shinyUI(fluidPage(
 
 server <- shinyServer(function(input, output) {
 	
+	vals <- reactiveValues(
+		keeprows = rep(TRUE, nrow(intervalSET))
+	)
+		
 	tmpdata <- reactive({ 
 		intervalSET %>%
 		filter(Site_Name == input$site) %>%
 		filter(SET_Type == input$SETtype)
 	})
 	
+	ranges <- reactiveValues(x = NULL, y = NULL)
 
-		
-	# output$plotTau <- renderTaucharts({
-	# 	tauchart(tmpdata()) %>% 
-	# 		tau_point(x = 'Date', y = 'beta', size = 'SE_beta') %>% 
-	# 		tau_trendline(type = 'linear', showPanel = FALSE, showTrend = TRUE, hideError = FALSE) %>% 
-	# 		tau_legend() 
-	# 		
-	# })		
-			
-	output$plotMetrics <- renderMetricsgraphics({
-		tmpdata() %>% 
-			mjs_plot(x = Date, y = beta) %>% 
-			mjs_point(least_squares = TRUE) %>% 
-			mjs_axis_x(xax_format = "date", show_secondary_x_label = TRUE) %>% 
-			mjs_add_confidence_band(lower_accessor = SE_beta, upper_accessor = SE_beta)
-	})
+output$plotgg <- renderPlot({
 	
+	keep <- tmpdata()[vals$keeprows, ,drop = FALSE]
+	exclude <- tmpdata()[!vals$keeprows, , drop = FALSE]
+
+		if (!is.null(ranges$x)) {
+		ranges$x <- as.Date(ranges$x, origin = "1970-01-01")
+	}
+	keep %>% 
+		ggplot(aes(x = Date, y = beta))+
+		geom_point(size = 0.75, alpha = 0.1)+
+		geom_path(size = 0.5, alpha = 0.1) +
+		geom_smooth(size = 1, fill = "#BEC1D4", color = "#023FA5", alpha = 0.7)+
+		geom_smooth(method = lm, color = "#8E063B", fill = "#D6BCC0", alpha = 0.7) +
+		theme_bw() +
+		geom_point(data = exclude, shape = 21, alpha = 0.25, size = 2) + 
+		labs(y = "Change in elevation (mm/year)", x = NULL) + 
+		coord_cartesian(xlim = ranges$x, ylim = c(-20, 20)) 
+		
+		
+	
+})		
+
+# When a double-click happens, check if there's a brush on the plot.
+# If so, zoom to the brush bounds; if not, reset the zoom.
+observeEvent(input$plotgg_dblclick, {
+	brush <- input$plotgg_brush
+	if (!is.null(brush)) {
+		ranges$x <- c(brush$xmin, brush$xmax)
+		ranges$y <- c(brush$ymin, brush$ymax)
+		
+	} else {
+		ranges$x <- NULL
+		ranges$y <- NULL
+	}
+})
+
+# Toggle points that are clicked
+observeEvent(input$plotgg_click, {
+	res <- nearPoints(tmpdata(), input$plotgg_click, allRows = TRUE)
+	
+	vals$keeprows <- xor(vals$keeprows, res$selected_)
+})
+
+# Toggle points that are brushed, when button is clicked
+observeEvent(input$exclude_toggle, {
+	res <- brushedPoints(tmpdata(), input$plotgg_brush, allRows = TRUE)
+	
+	vals$keeprows <- xor(vals$keeprows, res$selected_)
+})
+
+# Reset all points
+observeEvent(input$exclude_reset, {
+	vals$keeprows <- rep(TRUE, nrow(tmpdata()))
+})
+
+	
+output$brush_info <- renderPrint({
+	cat("Selected Points:\n",
+	    "Average of selected points:\n",
+	mean(brushedPoints(tmpdata(), input$plotgg_brush)$beta),"\n",
+	"Variance of selected points:\n",
+	var(brushedPoints(tmpdata(), input$plotgg_brush)$beta),"\n",
+	"Max of selected points:\n",
+	max(brushedPoints(tmpdata(), input$plotgg_brush)$beta),"\n",
+	"Minimum of selected points:\n",
+	min(brushedPoints(tmpdata(), input$plotgg_brush)$beta))
+
+})
+
 })
 
 
