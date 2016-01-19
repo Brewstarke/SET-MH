@@ -39,10 +39,18 @@ compileSETregressions <- function(wholeData){
 	tempsubset <- temp %>% filter(uniqueIDer == subsetsUnique[i])
 	z <- rbind(z, runningRegressionSETs(tempsubset))
 	
+	
 	}
+	print(length(z))
 	z #final output of the entire dataset with added beta and SE_beta columns.
 }
 
+
+summarizeSETregressions <- function(wholeRegress){
+	# Summarize pin regressions on the direction and then the station level
+	directionLevel <- wholeRegress %>% 
+		group_by(Position_ID, Location_ID, Start_Date)
+}
 
 # Full SET dataset 
 SET.data.Melt <- SET.data.Melt %>% 
@@ -52,21 +60,21 @@ regressionsSET <- compileSETregressions(SET.data.Melt)
 
 # Subset regression data
 intervalSET <- regressionsSET %>% 
-	select(SET_Type, Site_Name, Date, Plot_Name, Arm_Direction, beta, SE_beta)
+	select(SET_Type, Site_Name, Stratafication, Date, Plot_Name, Arm_Direction, beta, SE_beta)
 
 save(intervalSET, SummaryTable, file = 'RegressionAnalysis/regress.RData')
 
 # Plots
 
-
-regressionsSET %>% 
-	# filter(Site_Name == "East Creek") %>% 
-	filter(SET_Type == "Rod SET") %>% 
-	ggplot(aes(x = Date, y = beta))+
-	#geom_line()+
-	geom_point()+
-	geom_smooth()+
-	facet_grid(Site_Name ~ .)
+# 
+# regressionsSET %>% 
+# 	# filter(Site_Name == "East Creek") %>% 
+# 	filter(SET_Type == "Rod SET") %>% 
+# 	ggplot(aes(x = Date, y = beta))+
+# 	#geom_line()+
+# 	geom_point()+
+# 	geom_smooth()+
+# 	facet_grid(Site_Name ~ .)
 
 # 
 # regressionsSET %>% 

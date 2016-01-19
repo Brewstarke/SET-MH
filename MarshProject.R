@@ -38,7 +38,22 @@ source('src/Summaries.R')
 # Run running regression analysis
 source('src/SET_interval_calcs.R')
 
-save.image('.RData')
+save.image('.RData')# Save everything in the environment to the local project folder
+
+# Quick hack to get Marsh_App working.
+studysites <- unique(SummaryTable$Site_Name)
+names(studysites) <- studysites
+studysites <- as.vector(studysites)
+
+# Save selected data for marsh app.
+save(SET.data.Melt,
+     studysites,
+     SA.data.M,
+     SummaryTableCoords,
+     SummaryTable_wide,
+     intervalSET, 
+     SummaryTable, 
+     file = '~/R_Code/SET_app/appData.Rdata')
 
 
 
