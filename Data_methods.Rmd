@@ -45,6 +45,7 @@ This section will walk through each of our data processing steps; from loading d
 The first step is to connect to the data. To do so R needs to communicate with the Access database through an *"ODBC- protocol"* or translator. For this we use the package **RODBC** which allows R to talk with Access. 
 
 ```{r ReadChunks, echo=FALSE}
+# Read chunks pulls in the source files listed below and tags them based on the first line of the source file (ex. '@knitr Data'). 
 knitr::read_chunk("data/SET_data_imports.R")
 knitr::read_chunk("munge/Data_munge.R")
 knitr::read_chunk("src/SurfaceAccretion_rateCalc.R")
