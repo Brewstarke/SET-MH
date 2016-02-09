@@ -14,14 +14,6 @@ library(dplyr)
 # SA Slope calculator ---- slopeSAer
 # Create a function that checks to see if there's enough data to calculate a linear regression, 
 # and then regresses pin height across time (as decimal year) 
-slopeSAer <- function(e) {                                              
-	if(nrow(e) < 2) {return(data.frame(intercept = NA, slope = NA))     # if number of rows (data points) is less than 2 return NA's
-	} else {  # if there's enough data take data = e (which will be subsetted in later functions) then...
-		p <-  coef(lm(plug_mean ~ Dec_year, data = e))       # regress the plug depth against time (decimal years) and return the coefficients of the regression- slope and intercept
-		p <- data.frame(slope = round(p[2], digits= 4))      # subset out just the slope coefficient from the object p
-	}
-	
-} 
 
 #*************************************************************
 # 1.)
@@ -32,7 +24,7 @@ slopeSAer <- function(e) {
 SA.plug.means <- SA.data.M %>% 
 	select(Site_Name, Estab_Date, Stratafication, Plot_Name, Layer_Label, Start_Date, DecYear, Accretion) %>% 
 	group_by(Site_Name, Stratafication, Plot_Name, Layer_Label, Start_Date) %>% 
-	summarise(plugMeanAccret = round(mean(Accretion), 3), 
+	dplyr::summarise(plugMeanAccret = round(mean(Accretion), 3), 
 		  plug_se= round(sqrt(var(Accretion,na.rm=TRUE)/length(na.omit(Accretion))), 3),
 		  DecYear = (DecYear[1]), 
 		  sampleDate = Estab_Date[1])  # to carry over the DecYear and Estab_date the group_by must select just the first value [1] as some plugs only had one measure available.
@@ -46,45 +38,45 @@ SA.plot.regress <- SA.plug.means %>%
 
 
 # regress mean plug 'height' against Dec_year to find slope or rate mm/year
-
-meanslope.Accret <- ddply(.data= SA.plug.means, 
-                          .(Location_ID, 
-                            Site_Name, 
-                            Stratafication, 
-                            Layer_Label, 
-                            Plot_Name), 
-                          slopeSAer)
-
-SA.plot.means <- ddply(.data= meanslope.Accret,
-                       .(Location_ID, 
-                         Site_Name, 
-                         Stratafication, 
-                         Plot_Name),
-											 plyr::summarize,
-                       plot_mean = round(mean(slope,na.rm=TRUE),digits= 3), 
-                       plot_SE= round(sqrt(var(slope,na.rm=TRUE)/length(na.omit(slope))), digits= 3)
-                       )
-
-# Join to get Station info-
-SA.plot.means <- join(x= SA.plot.means, y= StudySites, by= "Location_ID", type= "left")
-SA.station.means <- SA.plot.means[,3:6]
-SA.plot.means <- SA.plot.means[,3:36]
+# 
+# meanslope.Accret <- ddply(.data= SA.plug.means, 
+#                           .(Location_ID, 
+#                             Site_Name, 
+#                             Stratafication, 
+#                             Layer_Label, 
+#                             Plot_Name), 
+#                           slopeSAer)
+# 
+# SA.plot.means <- ddply(.data= meanslope.Accret,
+#                        .(Location_ID, 
+#                          Site_Name, 
+#                          Stratafication, 
+#                          Plot_Name),
+# 											 plyr::summarize,
+#                        plot_mean = round(mean(slope,na.rm=TRUE),digits= 3), 
+#                        plot_SE= round(sqrt(var(slope,na.rm=TRUE)/length(na.omit(slope))), digits= 3)
+#                        )
+# 
+# # Join to get Station info-
+# SA.plot.means <- join(x= SA.plot.means, y= StudySites, by= "Location_ID", type= "left")
+# SA.station.means <- SA.plot.means[,3:6]
+# SA.plot.means <- SA.plot.means[,3:36]
 
 #Use plot means to calculate station means-
 
-
-SA.site.means <- plyr::ddply(.data=SA.plot.means, 
-                          .(Site_Name, 
-                            Stratafication), # Same as above, add Layer_ID as it's unique to the station level (effectively averaging the plots from above)
-			     plyr::summarize, 
-                          site_Mean= round(mean(plot_mean, na.rm=TRUE), digits= 3), 
-                          site_SE= round(stder(plot_mean), digits= 3)
-                       )
-
-SA.site.means <- plyr::rename(SA.site.means, replace=c(site_Mean = "Mean_Accretion_Rate", site_SE = "SE of mean Accrretion mm/yr"))
-
-
-write.xlsx(x= SA.site.means, file="reports/SArates.xls")
+# 
+# SA.site.means <- plyr::ddply(.data=SA.plot.means, 
+#                           .(Site_Name, 
+#                             Stratafication), # Same as above, add Layer_ID as it's unique to the station level (effectively averaging the plots from above)
+# 			     plyr::summarize, 
+#                           site_Mean= round(mean(plot_mean, na.rm=TRUE), digits= 3), 
+#                           site_SE= round(stder(plot_mean), digits= 3)
+#                        )
+# 
+# SA.site.means <- plyr::rename(SA.site.means, replace=c(site_Mean = "Mean_Accretion_Rate", site_SE = "SE of mean Accrretion mm/yr"))
+# 
+# 
+# write.xlsx(x= SA.site.means, file="reports/SArates.xls")
 
 
 
