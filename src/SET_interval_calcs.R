@@ -25,6 +25,7 @@ runningRegressionSETs <- function(SETdata){
 
 
 
+
 compileSETregressions <- function(wholeData){
 	##
 	# Brings in the entire SET data set in long format, subsets the data down to the pin level and
