@@ -7,26 +7,46 @@
 
 require(plyr)
 require(xlsx)
+library(dplyr)
 
+
+#*************************************************************
+# SA Slope calculator ---- slopeSAer
+# Create a function that checks to see if there's enough data to calculate a linear regression, 
+# and then regresses pin height across time (as decimal year) 
+slopeSAer <- function(e) {                                              
+	if(nrow(e) < 2) {return(data.frame(intercept = NA, slope = NA))     # if number of rows (data points) is less than 2 return NA's
+	} else {  # if there's enough data take data = e (which will be subsetted in later functions) then...
+		p <-  coef(lm(plug_mean ~ Dec_year, data = e))       # regress the plug depth against time (decimal years) and return the coefficients of the regression- slope and intercept
+		p <- data.frame(slope = round(p[2], digits= 4))      # subset out just the slope coefficient from the object p
+	}
+	
+} 
 
 #*************************************************************
 # 1.)
 # Calculate slope using function slopeSAer created above ----
 # Outputs average slope (read as annual rate mm/year) of change by Site, Stations, and Plot
-SA.plug.means <- ddply(.data= SA.data.M, # Average depth for each plug cut
-                       .(Site_Name, 
-                         Stratafication, 
-                         Layer_Label, 
-                         Start_Date, 
-                         Location_ID,
-                         Plot_Name),
-		       plyr::summarize,
-                       Dec_year= mean(DecYear),
-                       plug_mean= round(mean(Accretion), digits= 3),
-                       plug_se= round(sqrt(var(Accretion,na.rm=TRUE)/length(na.omit(Accretion))))
-                      )
+# Plug mean by date, plot and station (locationID synonomyous with PlotName)
+
+SA.plug.means <- SA.data.M %>% 
+	select(Site_Name, Estab_Date, Stratafication, Plot_Name, Layer_Label, Start_Date, DecYear, Accretion) %>% 
+	group_by(Site_Name, Stratafication, Plot_Name, Layer_Label, Start_Date) %>% 
+	summarise(plugMeanAccret = round(mean(Accretion), 3), 
+		  plug_se= round(sqrt(var(Accretion,na.rm=TRUE)/length(na.omit(Accretion))), 3),
+		  DecYear = (DecYear[1]), 
+		  sampleDate = Estab_Date[1])  # to carry over the DecYear and Estab_date the group_by must select just the first value [1] as some plugs only had one measure available.
+
+# Each plot measure (plugMeanAccret) is regressed against time (DecYear) to generate 3 slopes which will be used to summarize the station
+
+SA.plot.regress <- SA.plug.means %>% 
+	select(Site_Name, sampleDate, Stratafication, Plot_Name, Layer_Label, Start_Date, DecYear, plugMeanAccret) %>% 
+	group_by(Site_Name, Stratafication, Plot_Name, Layer_Label) %>% 
+	do(slopeSAer(.))
+
 
 # regress mean plug 'height' against Dec_year to find slope or rate mm/year
+
 meanslope.Accret <- ddply(.data= SA.plug.means, 
                           .(Location_ID, 
                             Site_Name, 
