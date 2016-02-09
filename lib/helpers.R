@@ -20,7 +20,7 @@ sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))
 slopeSAer <- function(e) {                                              
 	if(nrow(e) < 2) {return(data.frame(intercept = NA, slope = NA))     # if number of rows (data points) is less than 2 return NA's
 	} else {  # if there's enough data take data = e (which will be subsetted in later functions) then...
-		p <-  coef(lm(plug_mean ~ Dec_year, data = e))       # regress the plug depth against time (decimal years) and return the coefficients of the regression- slope and intercept
+		p <-  coef(lm(plugMeanAccret ~ DecYear, data = e))       # regress the plug depth against time (decimal years) and return the coefficients of the regression- slope and intercept
 		p <- data.frame(slope = round(p[2], digits= 4))      # subset out just the slope coefficient from the object p
 	}
 	
