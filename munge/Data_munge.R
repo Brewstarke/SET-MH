@@ -7,21 +7,21 @@
 #SQL type joins to flatten the tables from the database. ----
 
 #Study Sites with Locations data --Location_ID is a numeric key analagous to Plot_Name 
-StudySites <- join(Sites, Locations, by="Site_ID", type="inner") 
+StudySites <- inner_join(Sites, Locations, by="Site_ID") 
 
 #Surface Accretion data 
-SA <- join(SA_Layers, SAccret, by="Layer_ID", type= "inner")
+SA <- inner_join(SA_Layers, SAccret, by="Layer_ID")
 
 #SET Rod data
-SET <- join(SETdata, Positions, by="Position_ID", type= "inner")
+SET <- inner_join(SETdata, Positions, by="Position_ID")
 
 # Sampling events and sites
 # join site-location data with sampling 'events'
-Samplings <- join(StudySites, Events, by= "Location_ID", type="inner") 
+Samplings <- inner_join(StudySites, Events, by= "Location_ID") 
 
 # Complete datasets with ALL variables
-SA.data <- join(SA, Samplings, by="Event_ID", type="inner")
-SET.data <- join(SET, Samplings, by="Event_ID", type= "inner")
+SA.data <- inner_join(SA, Samplings, by="Event_ID")
+SET.data <- inner_join(SET, Samplings, by="Event_ID")
 
 # Remove excess dataframes leaving only SA and SET data ----
 rm(Events,
@@ -44,6 +44,8 @@ SET.data$Start_Date <- as.Date(SET.data$Start_Date) # Ensure that 'Start_Date' i
 
 # Clean up SET.data dataframe and reshape to allow for analysis-----
 # 'keeps' is list of variable names to keep; 'iders' are identifier variables used in reshaping the dataframe
+
+
 keeps <- c("SET_Type", 
            "Position_ID", 
            "Location_ID", 
@@ -88,6 +90,7 @@ iders <- c("SET_Type",
 SET.data <- SET.data[keeps] 
 SET.data <- tbl_df(SET.data)
 # Use reshape2 to melt wide table down to a long format (really only transposing the pin readings) =====
+# Eventually migrate to tidyr for speed and ease of reading code.
 SET.data.Melt <- melt(SET.data, id= iders, na.rm=TRUE)
 
 ## @knitr Dates
