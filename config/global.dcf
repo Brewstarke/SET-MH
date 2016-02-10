@@ -4,7 +4,7 @@ munging: TRUE
 logging: FALSE
 load_libraries: TRUE
 libraries: reshape2, dplyr, ggplot2, stringr, RODBC, xlsx, Hmisc,
-        xtable, ggthemes, scales, png, jpeg, RColorBrewer, tidyr, dygraphs, xts
+        xtable, ggthemes, scales, png, jpeg, RColorBrewer, tidyr, dygraphs, xts, broom
 as_factors: TRUE
 data_tables: FALSE
 recursive_loading: FALSE
