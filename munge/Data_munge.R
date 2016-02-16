@@ -40,26 +40,45 @@ rm(Events,
 # list of Notes regarding issues with pin placement 
 # removes <- c("deer trail", 'hole', 'Hole', )
 
-# Add a filter to restrict pins that have 'issues' such as holes, mussels, grass tufts.
+
+# Complete SET data in a WIDE format ----
+# Trim excess columns and clean charcter strings.
 SET.data <- SET.data %>% tbl_df() %>% select(Pin1:Pin9_Notes, Arm_Direction, Site_Name, SET_Type, Stratafication:Plot_Name, Position_ID, X_Coord, Y_Coord, Start_Date) %>% 
 	mutate(Stratafication = capwords(as.character(Stratafication)), Start_Date = as.Date(Start_Date))    # Eventually add a filter that will filter out only 'clean' readings
 	
-attr(SET.data, 'Datainfo') <-"Full SET dataset including all measures." # give dataframe some metadata attributes
+attr(SET.data, 'Datainfo') <-"Full SET dataset including all measures in a WIDE format" # give dataframe some metadata attributes
 
-# Create a list of pins that have a note regarding an issue--
+# Complete SET dataset in a LONG format ----
+SET.data.long <- SET.data %>% 
+	droplevels() %>% 
+	select(Site_Name, Stratafication, Plot_Name, SET_Type, num_range("Pin", 1:9), Arm_Direction, Position_ID, Start_Date) %>% 
+	gather("Pin", "Raw", 5:13) %>% 
+	group_by(Position_ID, Pin) %>% 
+	rename(Date = Start_Date) %>%  # rename SET reading date
+	mutate(EstDate = min(Date)) %>%  # create a column identifying the EstDate (date of SET-MH station establishment/first reading)
+	arrange(Date) %>% 
+	mutate(Change = as.numeric(Raw - Raw[1]),
+	       incrementalChange = c(NA, diff(Change))) %>% 
+	ungroup() %>% 
+	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3))
+attr(SET.data.long, 'Datainfo') <-"Full SET dataset including all measures in a LONG format" # give dataframe some metadata attributes
+
+
+# Clean outliers and 'issues' at time of reading ----
+# Two strategies- 1) drop complete time series for a pin that has an 'issue' at any one point in the series, vs 2) drop only that data point that has an issue.
+# Or a merger of both stratagies.... 
+# For holes: drop the whole timeseries
+# For others: drop only that value
+
+# Create a list of pins that have a note regarding an issue ----
 pinlistCleandf <- SET.data %>% select(ends_with("_Notes"), Position_ID) %>% select(1:9, Position_ID) %>% 
 	gather('pin', 'note', -Position_ID) %>% filter(!is.na(note))
 
 pinlistClean <- unique(pinlistCleandf$Position_ID)
 
-# Two strategies- 1) drop complete time series for a pin that has an issue, vs 2) drop only that data point that has an issue.
-# Or a merger of both stratagies. 
-# For holes: drop the whole timeseries
-# For others: drop only that value
-# Or even a third (or fourth) strategy- rectify the notes in the database to reflect only values that should be dropped-
+# SET data cleaned of any pins that have an 'issue' in the timeseries- Most restrictive dataset strategy 1 from above. ----
 
-
-SET.data.compclean <- SET.data %>% 
+SET.data.cleanV1 <- SET.data %>% 
 	filter(!Position_ID %in% pinlistClean) %>% 
 	droplevels() %>% 
 	select(Site_Name, Stratafication, Plot_Name, SET_Type, num_range("Pin", 1:9), Arm_Direction, Position_ID, Start_Date) %>% 
@@ -75,7 +94,25 @@ SET.data.compclean <- SET.data %>%
 
 attr(SET.data.compclean, 'Datainfo') <- "Any pin with a 'history of an issue' has been dropped" # edit metadata
 
-############################_____________________________________________________________@^*
+# SET data cleaned of any measures of a pin that had an issue ----
+
+SET.data.cleanV2 <- SET.data %>% 
+	select(Site_Name, Stratafication, Plot_Name, SET_Type, starts_with("Pin"), Arm_Direction, Position_ID, Start_Date)  %>% 
+	gather("key", "value", 5:22) %>%  separate(col = key, into = c("pin", "notes"), sep = "_", remove = T) %>% separate(pin, into = c("p","pinnumb"), sep = 3) %>% spread(p, value = value)
+
+
+
+	group_by(Position_ID, Pin) %>% 
+	rename(Date = Start_Date) %>%  # rename SET reading date
+	mutate(EstDate = min(Date)) %>%  # create a column identifying the EstDate (date of SET-MH station establishment/first reading)
+	arrange(Date) %>% 
+	mutate(Change = as.numeric(Raw - Raw[1]),
+	       incrementalChange = c(NA, diff(Change))) %>% 
+	ungroup() %>% 
+	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3))
+
+attr(SET.data.compclean, 'Datainfo') <- "Any pin with a 'history of an issue' has been dropped" # edit metadata
+
 
 # Identifiers used for reshape ----
 iders <- c("SET_Type", 
