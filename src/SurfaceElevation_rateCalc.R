@@ -33,6 +33,8 @@
 #*************************************************************
 # 1.)
 # Calculate slope (height regressed against time) for each pin using function slopeer created above ----
+# user  system elapsed 
+# 4.62    0.02    4.67 
 meanslope.Pin <- SET.data.Melt %>%
 	group_by(SET_Type, 
 		 Site_Name, 
