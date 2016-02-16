@@ -7,7 +7,7 @@
 #SQL type joins to flatten the tables from the database. ----
 
 #Study Sites with Locations data --Location_ID is a numeric key analagous to Plot_Name 
-StudySites <- inner_join(Sites, Locations, by="Site_ID") 
+StudyStations <- inner_join(Sites, Locations, by="Site_ID") 
 
 #Surface Accretion data 
 SA <- inner_join(SA_Layers, SAccret, by="Layer_ID")
@@ -17,7 +17,7 @@ SET <- inner_join(SETdata, Positions, by="Position_ID")
 
 # Sampling events and sites
 # join site-location data with sampling 'events'
-Samplings <- inner_join(StudySites, Events, by= "Location_ID") 
+Samplings <- inner_join(StudyStations, Events, by= "Location_ID") 
 
 # Complete datasets with ALL variables
 SA.data <- inner_join(SA, Samplings, by="Event_ID")
@@ -37,39 +37,46 @@ rm(Events,
    )
 ## @knitr MungeSETVariables
 
+# list of Notes regarding issues with pin placement 
+# removes <- c("deer trail", 'hole', 'Hole', )
 
-SET.data$Stratafication <- as.character(SET.data$Stratafication)
-SET.data$Stratafication <- as.factor(capwords(SET.data$Stratafication)) # Standardize the character format
-SET.data$Start_Date <- as.Date(SET.data$Start_Date) # Ensure that 'Start_Date' is of class 'date'
+# Add a filter to restrict pins that have 'issues' such as holes, mussels, grass tufts.
+SET.data <- SET.data %>% tbl_df() %>% select(Pin1:Pin9_Notes, Arm_Direction, Site_Name, SET_Type, Stratafication:Plot_Name, Position_ID, X_Coord, Y_Coord, Start_Date) %>% 
+	mutate(Stratafication = capwords(as.character(Stratafication)), Start_Date = as.Date(Start_Date))    # Eventually add a filter that will filter out only 'clean' readings
+	
+attr(SET.data, 'Datainfo') <-"Full SET dataset including all measures." # give dataframe some metadata attributes
 
-# Clean up SET.data dataframe and reshape to allow for analysis-----
-# 'keeps' is list of variable names to keep; 'iders' are identifier variables used in reshaping the dataframe
+# Create a list of pins that have a note regarding an issue--
+pinlistCleandf <- SET.data %>% select(ends_with("_Notes"), Position_ID) %>% select(1:9, Position_ID) %>% 
+	gather('pin', 'note', -Position_ID) %>% filter(!is.na(note))
+
+pinlistClean <- unique(pinlistCleandf$Position_ID)
+
+# Two strategies- 1) drop complete time series for a pin that has an issue, vs 2) drop only that data point that has an issue.
+# Or a merger of both stratagies. 
+# For holes: drop the whole timeseries
+# For others: drop only that value
+# Or even a third (or fourth) strategy- rectify the notes in the database to reflect only values that should be dropped-
 
 
-keeps <- c("SET_Type", 
-           "Position_ID", 
-           "Location_ID", 
-           "Site_Name", 
-           "Stratafication", 
-           "Plot_Name", 
-           "Start_Date", 
-           "Pin1", 
-           "Pin2", 
-           "Pin3", 
-           "Pin4", 
-           "Pin5", 
-           "Pin6", 
-           "Pin7", 
-           "Pin8", 
-           "Pin9", 
-           "Arm_Direction", 
-           "Position_Name", 
-           "X_Coord",
-           "Y_Coord",
-           "Coord_Units",
-           "Coord_System",
-           "UTM_Zone",
-           "Datum")
+SET.data.compclean <- SET.data %>% 
+	filter(!Position_ID %in% pinlistClean) %>% 
+	droplevels() %>% 
+	select(Site_Name, Stratafication, Plot_Name, SET_Type, num_range("Pin", 1:9), Arm_Direction, Position_ID, Start_Date) %>% 
+	gather("Pin", "Raw", 5:13) %>% 
+	group_by(Position_ID, Pin) %>% 
+	rename(Date = Start_Date) %>%  # rename SET reading date
+	mutate(EstDate = min(Date)) %>%  # create a column identifying the EstDate (date of SET-MH station establishment/first reading)
+	arrange(Date) %>% 
+	mutate(Change = as.numeric(Raw - Raw[1]),
+	       incrementalChange = c(NA, diff(Change))) %>% 
+	ungroup() %>% 
+	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3))
+
+attr(SET.data.compclean, 'Datainfo') <- "Any pin with a 'history of an issue' has been dropped" # edit metadata
+
+############################_____________________________________________________________@^*
+
 # Identifiers used for reshape ----
 iders <- c("SET_Type", 
            "Position_ID", 
@@ -87,11 +94,13 @@ iders <- c("SET_Type",
            "UTM_Zone",
            "Datum")
 
-SET.data <- SET.data[keeps] 
-SET.data <- tbl_df(SET.data)
+
+
 # Use reshape2 to melt wide table down to a long format (really only transposing the pin readings) =====
 # Eventually migrate to tidyr for speed and ease of reading code.
 SET.data.Melt <- melt(SET.data, id= iders, na.rm=TRUE)
+SET.data.Melt <- SET.data %>% gather()
+
 
 ## @knitr Dates
 ###
@@ -115,7 +124,7 @@ SET.data.Melt$DecYear <- round((((as.numeric(difftime(SET.data.Melt$Date, SET.da
 SET.data.Melt <- plyr::rename(SET.data.Melt, c(value="Raw")) #rename 'value' to 'Raw'
 SET.data.Melt <- SET.data.Melt[order(SET.data.Melt$Start_Date),]
 
-# Calculates a 'change' used for plots primarily- regressions are run through 'raw' data to reduce chance of error.
+# Calculates a 'change' used for plots primarily- regressions are run through 'raw' data to reduce chance of error. ----
 SET.data.Melt <- ddply(SET.data.Melt, 
                     .(Position_ID,
                       variable), 
