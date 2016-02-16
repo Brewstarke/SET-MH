@@ -4,20 +4,18 @@ SET_Plot_overlayvert <- function(highlightSite = NULL, title)
 {
 	require(ggplot2)
 	require(ggthemes)
-	require(plyr)
-	require(reshape2)
 	require(scales)
 	
 	title <- title
 # 	data <- SET.data.M[(SET.data.M$SET_Type == SET_Type),] # Subset the data type - removed to add faceting on this variable
-	data <- SET.data.Melt
-		SiteOrder <- unique(SET.data.Melt$Site_Name)[c(9,8,1:2, 4, 6, 7, 3, 5)]
+	data <- SET.data.compclean
+		SiteOrder <- unique(SET.data.compclean$Site_Name)[c(9,8,1:2, 4, 6, 7, 3, 5)]
 			data$Site_Name <- factor(data$Site_Name, levels= SiteOrder) 
 	
 	# Add control structure to ensure Site is available to select.
 	#	data$highlight <-  as.factor(data$Site_Name != highlightSite)
 	
-	SET_Plot2 <- ggplot(data= data, aes(y = change, 
+	SET_Plot2 <- ggplot(data= data, aes(y = Change, 
 					    x = Date, color= Site_Name,
 					    group= interaction(
 					    	Site_Name, 
