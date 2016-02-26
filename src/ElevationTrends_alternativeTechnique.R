@@ -14,9 +14,9 @@
 # 4.16    0.01    4.20 
 
 
-a <- SET.data.compclean %>% # Start with the munged and tidy dataframe (long format)
-	group_by(Position_ID, Pin) %>% # Group by the full dataset by individual pin
-	do(tidy(lm(Raw ~ DecYear, data = .))) # %>% # apply a linear regression model of pin height against time (decimal year) 
-	full_join(meanslope.Pin) %>% # replace with StudySites to bring in site names and other info.
-	mutate(diff = round(estimate, 3) - round(slope. 3)) %>% # test to ensure accurate calculation.
-	filter(term == "DecYear")
+a <- SET.data.long %>% # Start with the munged and tidy dataframe (long format)
+	group_by(pin_ID) %>% # Group by the full dataset by individual pin
+	do(tidy(lm(Raw ~ DecYear, data = .))) %>% # apply a linear regression model of pin height against time (decimal year) 
+	filter(term == 'DecYear') %>% 
+	right_join(SET.data.long)
+
