@@ -63,14 +63,14 @@ rm(Events,
 # Complete SET data in a WIDE format ----
 # Trim excess columns and clean charcter strings.
 SET.data %<>% tbl_df() %>% 
-	select(Pin1:Pin9_Notes, Arm_Direction, Site_Name, SET_Type, Stratafication:Plot_Name, Position_ID, Start_Date, Organization, SET_Reader) %>% 
+	select(Pin1:Pin9_Notes, Arm_Direction, Site_Name, SET_Type, Stratafication:Plot_Name, Location_ID.x, Position_ID, Start_Date, Organization, SET_Reader) %>% 
 	mutate(Stratafication = capwords(as.character(Stratafication)), Start_Date = as.Date(Start_Date))     # Eventually add a filter that will filter out only 'clean' readings
 	
 attr(SET.data, 'Datainfo') <-"Full SET dataset including all measures in a WIDE format" # give dataframe some metadata attributes
 
 # Complete SET dataset in a LONG format ----
 SET.data.long <- SET.data %>%
-	select(Site_Name, Stratafication, Plot_Name, SET_Type, Pin1:Pin9_Notes, Arm_Direction, Position_ID, Start_Date, SET_Reader)%>% 
+	select(Site_Name, Stratafication, Plot_Name, SET_Type, Pin1:Pin9_Notes, Arm_Direction, Location_ID.x, Position_ID, Start_Date, SET_Reader)%>% 
 	group_by(Position_ID, Start_Date) %>% 
 	gather(pin, measure, Pin1:Pin9_Notes) %>% filter(!is.na(measure)) %>% # Remvoe NA from PinX_Notes 
 	separate(pin, c('name', 'note'), "_", remove = TRUE) %>% 
@@ -80,7 +80,7 @@ SET.data.long <- SET.data %>%
 	spread(key, measure) %>% 
 	mutate(pin_ID = paste(Position_ID, Pin_number, sep = "_")) %>% # Above all transposing and repositioning dataframe.
 	ungroup() %>% # Below- adding columns, renaming variables, and reordering rows.
-	rename(Date = Start_Date) %>%  # rename SET reading date
+	rename(Date = Start_Date, Location_ID = Location_ID.x) %>%  # rename SET reading date
 	group_by(pin_ID) %>% # group by pinID to 
 	mutate(EstDate = min(Date)) %>%  # create a column identifying the EstDate (date of the first SET-MH station reading)
 	arrange(Date) %>% 
@@ -158,36 +158,13 @@ iders <- c("SET_Type",
 #Clean up SA.data dataframe and reshape; same as above but working on surface accretion data
 # similar steps as SET.data
 
-keepsA <- c("Location_ID", 
-	    "Layer_Label", 
-	    "Estab_Date", 
-	    "Measure_1", 
-	    "Measure_2", 
-	    "Measure_3", 
-	    "Measure_4",
-	    "Measure_5", 
-	    "Measure_6", 
-	    "Site_Name", 
-	    "Stratafication", 
-	    "Plot_Name", 
-	    "Start_Date")
-SA.data <- SA.data[keepsA] # Drop unneeded variables
-
-idersSA <- c("Location_ID", 
-	     "Layer_Label", 
-	     "Estab_Date", 
-	     "Site_Name", 
-	     "Stratafication", 
-	     "Plot_Name", 
-	     "Start_Date")
-SA.data.M <- melt(SA.data, id= idersSA, na.rm=TRUE) # melt down dataframe into tidy table.
+SA.data.long <- SA.data %>% gather('measure', 'Accretion', Measure_1:Measure_6) %>% 
+	filter(!is.na(Accretion)) %>% 
+	select(Layer_ID, Layer_Label, Location_ID.x, Estab_Date, Start_Date, Accretion, Core_Type, Site_ID, Plot_Name, Organization) %>% 
+	mutate(DecYear = round((((as.numeric(difftime(Start_Date, Estab_Date, units = "days"))))/365),3)) %>% 
+	rename(Date = Start_Date)
 
 
-# Create variable DecYear- decimal years - in SA.data, for regression analysis
-SA.data.M$DecYear <- round((((as.numeric(difftime(SA.data.M$Start_Date, SA.data.M$Estab_Date, units = "days"))))/365),3)
-
-#SA.data.M$DecYear <- round(((SA.data.M$Start_Date-SA.data.M$Estab_Date)/365),3)
-SA.data.M <- plyr::rename(SA.data.M, c(value="Accretion")) #rename 'value' to 'Accretion'
 
 
 
