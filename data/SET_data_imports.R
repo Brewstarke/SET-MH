@@ -28,6 +28,10 @@ Locations$Stratafication <- as.factor(capwords((as.character(Locations$Stratafic
 # Sampling events
 Events <- sqlFetch(SET.DB, sqtable= "tbl_Events")
 
+# Contacts/Field Personel
+EventContacts <- sqlFetch(SET.DB, sqtable = "xref_Event_Contacts")
+Contacts <- sqlFetch(SET.DB, sqtable = "tlu_Contacts")
+
 # SET Rod data
 Positions <- sqlFetch(SET.DB, sqtable= "tbl_SET_Position")
 SETdata<- sqlFetch(SET.DB, sqtable= "tbl_SET_Data")
