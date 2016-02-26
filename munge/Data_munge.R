@@ -7,7 +7,8 @@
 #SQL type joins to flatten the tables from the database. ----
 
 #Study Sites with Locations data --Location_ID is a numeric key analagous to Plot_Name 
-StudyStations <- inner_join(Sites, Locations, by="Site_ID") 
+StudyStations <- inner_join(Sites, Locations, by="Site_ID") # Change to a left join--@^*
+
 
 #Surface Accretion data 
 SA <- inner_join(SA_Layers, SAccret, by="Layer_ID")
@@ -15,9 +16,24 @@ SA <- inner_join(SA_Layers, SAccret, by="Layer_ID")
 #SET Rod data
 SET <- inner_join(SETdata, Positions, by="Position_ID")
 
+# SET readers-  Gather up Event_ID, SET Reader and Contact_ID -- Then match up Contact ID with Contacts Last name-
+Contacts %<>% select(Contact_ID, Last_Name, First_Name, Organization) %>% mutate(FullName = paste(First_Name, Last_Name, sep = " "))
+
+SET_readers <- EventContacts %>% 
+	left_join(Contacts, by = "Contact_ID") %>% 
+	select(Event_ID, Contact_ID, Contact_Role, Last_Name, First_Name, Organization, FullName)%>% 
+	mutate(ID = paste(Event_ID, Contact_ID, sep = "_")) %>% 
+	spread(key = Contact_Role, value = FullName) %>% 
+	rename(SET_Reader = `SET Reader`) %>% 
+	select(Event_ID, Last_Name, First_Name, Organization, SET_Reader) %>% 
+	filter(complete.cases(.))
+
+
 # Sampling events and sites
 # join site-location data with sampling 'events'
 Samplings <- inner_join(StudyStations, Events, by= "Location_ID") 
+Samplings <- inner_join(Samplings, SET_readers, by = "Event_ID")
+
 
 # Complete datasets with ALL variables
 SA.data <- inner_join(SA, Samplings, by="Event_ID")
@@ -25,6 +41,9 @@ SET.data <- inner_join(SET, Samplings, by="Event_ID")
 
 # Remove excess dataframes leaving only SA and SET data ----
 rm(Events,
+   Contacts,
+   EventContacts,
+   SET_readers,
    Positions,
    SA,
    SA_Layers,
@@ -43,76 +62,75 @@ rm(Events,
 
 # Complete SET data in a WIDE format ----
 # Trim excess columns and clean charcter strings.
-SET.data <- SET.data %>% tbl_df() %>% select(Pin1:Pin9_Notes, Arm_Direction, Site_Name, SET_Type, Stratafication:Plot_Name, Position_ID, X_Coord, Y_Coord, Start_Date) %>% 
-	mutate(Stratafication = capwords(as.character(Stratafication)), Start_Date = as.Date(Start_Date))    # Eventually add a filter that will filter out only 'clean' readings
+SET.data %<>% tbl_df() %>% 
+	select(Pin1:Pin9_Notes, Arm_Direction, Site_Name, SET_Type, Stratafication:Plot_Name, Position_ID, Start_Date, Organization, SET_Reader) %>% 
+	mutate(Stratafication = capwords(as.character(Stratafication)), Start_Date = as.Date(Start_Date))     # Eventually add a filter that will filter out only 'clean' readings
 	
 attr(SET.data, 'Datainfo') <-"Full SET dataset including all measures in a WIDE format" # give dataframe some metadata attributes
 
 # Complete SET dataset in a LONG format ----
-SET.data.long <- SET.data %>% 
-	droplevels() %>% 
-	select(Site_Name, Stratafication, Plot_Name, SET_Type, num_range("Pin", 1:9), Arm_Direction, Position_ID, Start_Date) %>% 
-	gather("Pin", "Raw", 5:13) %>% 
-	group_by(Position_ID, Pin) %>% 
+SET.data.long <- SET.data %>%
+	select(Site_Name, Stratafication, Plot_Name, SET_Type, Pin1:Pin9_Notes, Arm_Direction, Position_ID, Start_Date, SET_Reader)%>% 
+	group_by(Position_ID, Start_Date) %>% 
+	gather(pin, measure, Pin1:Pin9_Notes) %>% filter(!is.na(measure)) %>% # Remvoe NA from PinX_Notes 
+	separate(pin, c('name', 'note'), "_", remove = TRUE) %>% 
+	separate(name, c('name', 'Pin_number'), 3, remove = TRUE) %>% 
+	mutate(key = ifelse(is.na(note),yes = "Raw", no = note)) %>% 
+	select(-note, -name) %>% 
+	spread(key, measure) %>% 
+	mutate(pin_ID = paste(Position_ID, Pin_number, sep = "_")) %>% # Above all transposing and repositioning dataframe.
+	ungroup() %>% # Below- adding columns, renaming variables, and reordering rows.
 	rename(Date = Start_Date) %>%  # rename SET reading date
-	mutate(EstDate = min(Date)) %>%  # create a column identifying the EstDate (date of SET-MH station establishment/first reading)
+	group_by(pin_ID) %>% # group by pinID to 
+	mutate(EstDate = min(Date)) %>%  # create a column identifying the EstDate (date of the first SET-MH station reading)
 	arrange(Date) %>% 
-	mutate(Change = as.numeric(Raw - Raw[1]),
-	       incrementalChange = c(NA, diff(Change))) %>% 
 	ungroup() %>% 
-	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3))
+	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3),
+	       Raw = as.numeric(Raw))
+
 attr(SET.data.long, 'Datainfo') <-"Full SET dataset including all measures in a LONG format" # give dataframe some metadata attributes
 
 
 # Clean outliers and 'issues' at time of reading ----
-# Two strategies- 1) drop complete time series for a pin that has an 'issue' at any one point in the series, vs 2) drop only that data point that has an issue.
+# Two strategies- 1) drop complete time series for a pin that has an 'issue' at any one point in the series, 
+# vs 2) drop only that data point that has an issue.
 # Or a merger of both stratagies.... 
 # For holes: drop the whole timeseries
 # For others: drop only that value
 
 # Create a list of pins that have a note regarding an issue ----
-pinlistCleandf <- SET.data %>% select(ends_with("_Notes"), Position_ID) %>% select(1:9, Position_ID) %>% 
-	gather('pin', 'note', -Position_ID) %>% filter(!is.na(note))
+troublePins <- SET.data.long %>% ungroup() %>% select(Notes, pin_ID) %>% filter(complete.cases(.)) %>% `attr<-`("Datainfo", "List of pins that have reported issues (holes, etc)")
 
-pinlistClean <- unique(pinlistCleandf$Position_ID)
+pinlistClean <- unique(troublePins$pin_ID)
 
 # SET data cleaned of any pins that have an 'issue' in the timeseries- Most restrictive dataset strategy 1 from above. ----
 
-SET.data.cleanV1 <- SET.data %>% 
-	filter(!Position_ID %in% pinlistClean) %>% 
+	
+SET.data.cleanV1 <- SET.data.long %>% 
+	filter(!pin_ID %in% troublePins$pin_ID) %>% 
 	droplevels() %>% 
-	select(Site_Name, Stratafication, Plot_Name, SET_Type, num_range("Pin", 1:9), Arm_Direction, Position_ID, Start_Date) %>% 
-	gather("Pin", "Raw", 5:13) %>% 
-	group_by(Position_ID, Pin) %>% 
-	rename(Date = Start_Date) %>%  # rename SET reading date
-	mutate(EstDate = min(Date)) %>%  # create a column identifying the EstDate (date of SET-MH station establishment/first reading)
-	arrange(Date) %>% 
+	group_by(pin_ID)%>% 
 	mutate(Change = as.numeric(Raw - Raw[1]),
-	       incrementalChange = c(NA, diff(Change))) %>% 
-	ungroup() %>% 
-	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3))
+	       incrementalChange = c(NA, diff(Change)))
 
-attr(SET.data.compclean, 'Datainfo') <- "Any pin with a 'history of an issue' has been dropped" # edit metadata
+
+attr(SET.data.cleanV1, 'Datainfo') <- "Any pin with a 'history of an issue' has been dropped" # edit metadata
 
 # SET data cleaned of any measures of a pin that had an issue ----
+SET.data.cleanV2 <- SET.data.long %>%
+	filter(is.na(Notes))
 
-SET.data.cleanV2 <- SET.data %>% 
-	select(Site_Name, Stratafication, Plot_Name, SET_Type, starts_with("Pin"), Arm_Direction, Position_ID, Start_Date)  %>% 
-	gather("key", "value", 5:22) %>%  separate(col = key, into = c("pin", "notes"), sep = "_", remove = T) %>% separate(pin, into = c("p","pinnumb"), sep = 3) %>% spread(p, value = value)
+attr(SET.data.cleanV2, 'Datainfo') <- "Any individual pin reading with a 'an issue' has been dropped" # edit metadata
+
+# SET data cleaned of any pins that were in a hole or on a mussel.
+bigIssues <- c("Hole", "hole", "mussel", "Holr", "Shell", "Mussel", "edge of hole", "hole next to mussel")
+bigIssuePins <- troublePins %>% filter(Notes %in% bigIssues)
 
 
+SET.data.cleanV3 <- SET.data.long %>% 
+	filter(!pin_ID %in% bigIssuePins$pin_ID)
 
-	group_by(Position_ID, Pin) %>% 
-	rename(Date = Start_Date) %>%  # rename SET reading date
-	mutate(EstDate = min(Date)) %>%  # create a column identifying the EstDate (date of SET-MH station establishment/first reading)
-	arrange(Date) %>% 
-	mutate(Change = as.numeric(Raw - Raw[1]),
-	       incrementalChange = c(NA, diff(Change))) %>% 
-	ungroup() %>% 
-	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3))
-
-attr(SET.data.compclean, 'Datainfo') <- "Any pin with a 'history of an issue' has been dropped" # edit metadata
-
+attr(SET.data.cleanV3, 'Datainfo') <- "Any individual pin reading with a 'an issue' has been dropped" # edit metadata
 
 # Identifiers used for reshape ----
 iders <- c("SET_Type", 
@@ -133,41 +151,6 @@ iders <- c("SET_Type",
 
 
 
-# Use reshape2 to melt wide table down to a long format (really only transposing the pin readings) =====
-# Eventually migrate to tidyr for speed and ease of reading code.
-SET.data.Melt <- melt(SET.data, id= iders, na.rm=TRUE)
-SET.data.Melt <- SET.data %>% gather()
-
-
-## @knitr Dates
-###
-#  Munge dates to create sample date and establishment date---- 
-#  
-# Rename 'Start_Date' to just 'Date' to remove confusing variable name
-SET.data.Melt$Date <- as.Date((SET.data.Melt$Start_Date))
-
-# Create column of 'establishment dates'= EstDate ----
-# Date the site was first established
-# Use ddply to split by Location_ID and find the first date read, record that in -$EstDate
-SET.data.Melt <-ddply(SET.data.Melt,
-                   .(Location_ID),
-                   transform,
-                   EstDate= (as.Date(min(Date)))) 
-
-# Create variable DecYear- decimal years - in SET data, for regression analysis. 
-# difftime- calculates the time difference between t1 and t2 in units identified
-
-SET.data.Melt$DecYear <- round((((as.numeric(difftime(SET.data.Melt$Date, SET.data.Melt$EstDate, units = "days"))))/365),3)
-SET.data.Melt <- plyr::rename(SET.data.Melt, c(value="Raw")) #rename 'value' to 'Raw'
-SET.data.Melt <- SET.data.Melt[order(SET.data.Melt$Start_Date),]
-
-# Calculates a 'change' used for plots primarily- regressions are run through 'raw' data to reduce chance of error. ----
-SET.data.Melt <- ddply(SET.data.Melt, 
-                    .(Position_ID,
-                      variable), 
-                    mutate, 
-                    change = as.numeric(Raw-Raw[1]),
-		    incrementalChange = c(NA, diff(change)))
 ## @knitr SAdata
 ###
 # Surface Accretion  -----
