@@ -14,9 +14,22 @@
 # 4.16    0.01    4.20 
 
 
-a <- SET.data.long %>% # Start with the munged and tidy dataframe (long format)
-	group_by(pin_ID) %>% # Group by the full dataset by individual pin
-	do(tidy(lm(Raw ~ DecYear, data = .))) %>% # apply a linear regression model of pin height against time (decimal year) 
-	filter(term == 'DecYear') %>% 
-	right_join(SET.data.long)
+SET_Summarize <- function(data){
+	data %>% # Start with the munged and tidy dataframe (long format)
+		group_by(Site_Name, Location_ID, Position_ID, pin_ID) %>% # Group by the full dataset by individual pin
+		do(tidy(lm(Raw ~ DecYear, data = .))) %>% # apply a linear regression model of pin height against time (decimal year) 
+		filter(term == 'DecYear') %>% 
+		group_by(Site_Name, Location_ID) %>% 
+		summarise(meanElevationRate = mean(estimate), ElevationRate_se = stder(estimate)) %>% 
+		inner_join(StudyStations) %>% 
+		select(SET_ID, Site_Name, Stratafication, Plot_Name, SET_Type, meanElevationRate, ElevationRate_se)
+}
 
+
+a <- SET_Summarize(SET.data.long)
+
+b <- SET_Summarize(SET.data.cleanV1)
+
+c <- SET_Summarize(SET.data.cleanV2)
+
+d <- SET_Summarize(SET.data.cleanV3)
