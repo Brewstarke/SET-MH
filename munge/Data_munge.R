@@ -130,7 +130,7 @@ bigIssuePins <- troublePins %>% filter(Notes %in% bigIssues)
 SET.data.cleanV3 <- SET.data.long %>% 
 	filter(!pin_ID %in% bigIssuePins$pin_ID)
 
-attr(SET.data.cleanV3, 'Datainfo') <- "Any individual pin reading with a 'an issue' has been dropped" # edit metadata
+attr(SET.data.cleanV3, 'Datainfo') <- "Any individual pin reading taken atop a hole or mussle has been dropped" # edit metadata
 
 # Identifiers used for reshape ----
 iders <- c("SET_Type", 
