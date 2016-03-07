@@ -6,37 +6,42 @@
 
 # Create funciton that takes a SET station and outputs the paired T-test result
 
-accretionElevation <- function(stationID){
+accretionElevation <- function(SETdata, stationID){
 	# 
-	# @stationID = SET-MH station of interest. T-test will compare accretion rates to elevation rates at that station
+	# stationID = SET-MH station of interest. T-test will compare accretion rates to elevation rates at that station
 	# outputs a single row dataframe using the broom package:
-	#	1) t-test results
+	# SETdata = SET data set -typically used for comparisons across outlier removal strategies.
+	# 1) t-test results
 	# 	2) what the results mean- description of 
 	#
 	# parse out the vector of total elevation change 
 	
-	SET <- meanslope.Pos %>% 
+	SET <- SETdata %>% 
+		filter(Plot_Name == stationID) %>% filter(SET_Type == 'Rod SET') %>% 
+		.$meanElevationRate
+	
+	Acc <- SA.rates %>% 
 		filter(Plot_Name == stationID) %>% 
-		.$meanslope
-	Acc <- SA.plot.regress %>% 
-		filter(Plot_Name == stationID) %>% 
-		.$slope
+		.$Accretion
+	
 	tTest <- t.test(SET, Acc, paired = FALSE)
 	tTest %<>% tidy()
-	tTest %<>% mutate(stationID = as.character(stationID))
+	tTest %<>% mutate(station_ID = as.character(stationID))
 	tTest
 	
 }
 
+# ttest1 <- accretionElevation(a, stationID = 'BC-3')
+
 # Build dataframe from results of t-Test with translations of the processes driving the measured trends.
 
 
-accretionElevationDF <- function(){
+accretionElevationDF <- function(data){
 	tmp <- NULL # setup blank data frame
 	
-		for(i in unique(SA.data.M$Plot_Name))
+		for(i in unique(SA.data.long$Plot_Name))
 			{
-			tmp1 <- accretionElevation(i)
+			tmp1 <- accretionElevation(data, i)
 			tmp <- bind_rows(tmp, tmp1)
 			}
 	
@@ -58,17 +63,38 @@ accretionElevationDF <- function(){
 	dframe
 }
 
-accretionElevation <- accretionElevationDF()
+accretionElevationA <- accretionElevationDF(a) %>% mutate(dataset = 'A')
+accretionElevationB <- accretionElevationDF(b) %>% mutate(dataset = 'B')
+accretionElevationC <- accretionElevationDF(c) %>% mutate(dataset = 'C')
+accretionElevationD <- accretionElevationDF(d) %>% mutate(dataset = 'D')
 
+# Plot comparing different input datasets
+comparisons <- accretionElevationA %>% 
+	bind_rows(accretionElevationB) %>% 
+	bind_rows(accretionElevationC) %>% 
+	bind_rows(accretionElevationD)
+
+comparisons %>% ggplot(aes(x = station_ID, y = ElevationMean, color = dataset)) +
+	geom_pointrange(position = 'jitter', aes(ymin = conf.low, ymax = conf.high)) +
+	theme_bw()
+
+# ANOVA comparing 4 different 'datasets' 
+# If no significant difference between datasets then proceed as usual.
+
+fit <- aov(ElevationMean ~ dataset * station_ID, data = comparisons)
+fit
 
 # Display dataframe in DT (datatable HTMLwidget)
 
-accretionElevation %>% 
-	select(stationID, dominantprocess, ElevationMean, AccretionMean, diffMeans, t_stat, p.value, significance) %>% 
-	datatable(class = 'cell-border stripe',
+accretionElevationA %>% 
+	select(station_ID, dominantprocess, ElevationMean, AccretionMean, diffMeans, t_stat, p.value, significance) %>% 
+	datatable(#class = 'cell-border stripe',
 		  rownames = FALSE, 
-		  caption = "Comparison of elevation change and accretion rate",
-		  extensions = list('ColVis', 'FixedHeader'), options = list(dom = 'C<"clear">lfrtip', pageLength = 50))%>% 
+		  extensions = list('ColVis', 'FixedHeader'), options = list(dom = 'C<"clear">lfrtip', pageLength = 50),
+		  style = 'bootstrap',
+		  class = 'table-bordered',
+		  caption = 'Standard T-test comparison of accretion rate to elevation rate across stations.',
+		  filter = 'top')%>% 
 	formatRound(3:6, digits = 2) %>% 
 	formatRound(7, digits = 3)
 
