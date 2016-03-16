@@ -83,10 +83,11 @@ SET.data.long <- SET.data %>%
 	rename(Date = Start_Date, Location_ID = Location_ID.x) %>%  # rename SET reading date
 	group_by(pin_ID) %>% # group by pinID to 
 	mutate(EstDate = min(Date)) %>%  # create a column identifying the EstDate (date of the first SET-MH station reading)
-	arrange(Date) %>% 
+	arrange(Date) %>% # arrange by date
+	mutate(Change = as.numeric(Raw) - as.numeric(Raw[1]), 
+	       incrementalChange = c(NA, diff(Change))) %>% # add column of incremental change
 	ungroup() %>% 
-	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3),
-	       Raw = as.numeric(Raw))
+	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3))
 
 attr(SET.data.long, 'Datainfo') <-"Full SET dataset including all measures in a LONG format" # give dataframe some metadata attributes
 
@@ -108,17 +109,15 @@ pinlistClean <- unique(troublePins$pin_ID)
 	
 SET.data.cleanV1 <- SET.data.long %>% 
 	filter(!pin_ID %in% troublePins$pin_ID) %>% 
-	droplevels() %>% 
-	group_by(pin_ID)%>% 
-	mutate(Change = as.numeric(Raw - Raw[1]),
-	       incrementalChange = c(NA, diff(Change)))
+	droplevels()
 
 
 attr(SET.data.cleanV1, 'Datainfo') <- "Any pin with a 'history of an issue' has been dropped" # edit metadata
 
 # SET data cleaned of any measures of a pin that had an issue ----
 SET.data.cleanV2 <- SET.data.long %>%
-	filter(is.na(Notes))
+	filter(is.na(Notes))%>% 
+	droplevels()
 
 attr(SET.data.cleanV2, 'Datainfo') <- "Any individual pin reading with a 'an issue' has been dropped" # edit metadata
 
@@ -128,7 +127,8 @@ bigIssuePins <- troublePins %>% filter(Notes %in% bigIssues)
 
 
 SET.data.cleanV3 <- SET.data.long %>% 
-	filter(!pin_ID %in% bigIssuePins$pin_ID)
+	filter(!pin_ID %in% bigIssuePins$pin_ID)%>% 
+	droplevels()
 
 attr(SET.data.cleanV3, 'Datainfo') <- "Any individual pin reading taken atop a hole or mussle has been dropped" # edit metadata
 
