@@ -10,8 +10,7 @@
 # 
 # Picks up from 'munge/Data_munge.R' to analyze 'cleaned' data
 #
-# user  system elapsed 
-# 4.16    0.01    4.20 
+
 
 
 SET_Summarize <- function(data){
@@ -20,7 +19,7 @@ SET_Summarize <- function(data){
 		do(tidy(lm(Raw ~ DecYear, data = .))) %>% # apply a linear regression model of pin height against time (decimal year) 
 		filter(term == 'DecYear') %>% 
 		group_by(Site_Name, Location_ID, Position_ID) %>% 
-		summarise(meanElevationRate = mean(estimate), ElevationRate_se = stder(estimate)) %>% 
+		summarise(meanElevationRate = mean(estimate), ElevationRate_se = stder(estimate)) %>% # Summarize down to the station level.
 		inner_join(StudyStations) %>% 
 		select(SET_ID, Location_ID, Site_Name, Stratafication, Plot_Name, SET_Type, meanElevationRate, ElevationRate_se)
 	attr(df, which = "Datainfo") <- attr(data, "Datainfo")
@@ -39,6 +38,10 @@ d <- SET_Summarize(SET.data.cleanV3) %>% mutate(dataset = "D")
 
 CompiledSET <- a %>% bind_rows(b) %>% bind_rows(c) %>% bind_rows(d)
 
+SET.site.Summary <- function(stationLeveldata){
+	stationLeveldata %>% 
+		group_by(Site_Name, Stratafication, SET_Type)
+}
 
 
 # Surface Accretion Summarization ----
