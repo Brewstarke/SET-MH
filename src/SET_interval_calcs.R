@@ -16,7 +16,7 @@ runningRegressionSETs <- function(SETdata){
 	data$beta = rep(NA, ts_length)
 	data$SE_beta = rep(NA, ts_length)
 	for(i in 2:ts_length) {
-		regress <- lm(change ~ DecYear, data = data[1:i,])
+		regress <- lm(Change ~ DecYear, data = data[1:i,])
 		data$beta[i] <- coef(regress)[2]
 		data$SE_beta[i] <- summary(regress)$coef[4]
 	}
@@ -54,7 +54,7 @@ summarizeSETregressions <- function(wholeRegress){
 }
 
 # Full SET dataset 
-SET.data.Melt <- SET.data.Melt %>% 
+SET.data.Melt <- SET.data.long %>% 
 	filter(Date != '2008-08-08')
 
 regressionsSET <- compileSETregressions(SET.data.Melt)
