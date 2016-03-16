@@ -21,6 +21,9 @@ load.project()
 # After loading the raw data, a 'munge' script "~/munge/SET_data_munge.R" runs 
 # to clean data, rename some variables and organize the structure of the data as needed.
 
+# Add an outlier, data QA/QC script here- Maybe a shinygadget? 
+
+
 # SET data analysis pulled from the ~/src folder
 ## Need to update these source scripts ####
 source('src/SurfaceElevation_rateCalc.R')
