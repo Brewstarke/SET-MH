@@ -99,7 +99,16 @@ accretionElevationA %>%
 	formatRound(7, digits = 3)
 
 
-
+accretionElevationA %>% 
+	ggplot(aes(y = ElevationMean, x = AccretionMean, color = station_ID, label = station_ID))+
+	geom_label(vjust = 1)+
+	geom_point(aes(size = p.value))+ 
+	geom_abline(slope = 1, intercept = 0)+
+	geom_hline(yintercept = 3.24, color = 'red', size = 1)+
+	xlim(0,8)+
+	ylim(0,8)+
+	theme_bw() +
+	theme(legend.position = 'none')
 
 
 
