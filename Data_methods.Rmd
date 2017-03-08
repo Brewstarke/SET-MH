@@ -3,9 +3,7 @@ title: Surface Elevation Table- Marker Horizon (SET-MH) Data Handling and Analay
   in R
 author: "Adam Starke"
 subtitle: The Nature Conservancy - Long Island Chapter
-output:
-  word_document:
-    highlight: "tango"
+output: pdf_document
 ---
 
 ```{r DocumentSetup, echo=FALSE, results='asis', message=FALSE}
@@ -48,8 +46,7 @@ The first step is to connect to the data. To do so R needs to communicate with t
 # Read chunks pulls in the source files listed below and tags them based on the first line of the source file (ex. '@knitr Data'). 
 knitr::read_chunk("data/SET_data_imports.R")
 knitr::read_chunk("munge/Data_munge.R")
-knitr::read_chunk("src/SurfaceAccretion_rateCalc.R")
-knitr::read_chunk("src/SurfaceElevation_rateCalc.R")
+knitr::read_chunk("src/ElevationTrends_alternativeTechnique.R")
 knitr::read_chunk("src/Summaries.R")
 ```
 
