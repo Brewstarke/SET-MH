@@ -19,7 +19,7 @@ wetlands.shp <- readOGR(".","dfw_tidal_wetlands", encoding = "ESRI Shapefile")
 wetlands.shp <- spTransform(wetlands.shp, CRS("+init=epsg:4326"))
 
 
-mapData <- SummaryTableCoords %>% filter(SET_Type == "Rod SET")
+mapData <- StudyStationLocations %>% filter(SET_Type == "Rod SET")
 
 pal <- colorQuantile("Reds", domain = NULL, n = 5) #set color scheme using quantiles extracted from data.
 'http://a{s}.acetate.geoiq.com/tiles/terrain/{z}/{x}/{y}.png'
