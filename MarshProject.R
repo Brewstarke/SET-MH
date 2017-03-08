@@ -16,6 +16,9 @@ library(ProjectTemplate)
 
 
 load.project()
+# replace projectTemplate with sourcing scripts
+source('data/SET_data_imports.R') # eventually migrate up a level
+source('munge/Data_munge.R') # eventually migrate up a level
 
 # Running the above triggers the data loading script "~/data/SET_data_imports.R"
 # After loading the raw data, a 'munge' script "~/munge/SET_data_munge.R" runs 
