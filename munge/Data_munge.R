@@ -7,8 +7,8 @@
 #SQL type joins to flatten the tables from the database. ----
 
 #Study Sites with Locations data --Location_ID is a numeric key analagous to Plot_Name 
-StudyStations <- inner_join(Sites, Locations, by="Site_ID") # Change to a left join--@^*
-
+StudyStations <- left_join(Sites, Locations, by="Site_ID") # Change to a left join --@^*
+StudyStationLocations <- StudyStations %>% select(Location_ID, Site_Name, Stratafication, Plot_Name, X_Coord, Y_Coord, Coord_System, UTM_Zone, Datum, SET_Type)
 
 #Surface Accretion data 
 SA <- inner_join(SA_Layers, SAccret, by="Layer_ID")
@@ -24,7 +24,7 @@ SET_readers <- EventContacts %>%
 	select(Event_ID, Contact_ID, Contact_Role, Last_Name, First_Name, Organization, FullName)%>% 
 	mutate(ID = paste(Event_ID, Contact_ID, sep = "_")) %>% 
 	spread(key = Contact_Role, value = FullName) %>% 
-	rename(SET_Reader = `SET Reader`) %>% 
+	dplyr::rename(SET_Reader = `SET Reader`) %>% 
 	select(Event_ID, Last_Name, First_Name, Organization, SET_Reader) %>% 
 	filter(complete.cases(.))
 
@@ -80,7 +80,7 @@ SET.data.long <- SET.data %>%
 	spread(key, measure) %>% 
 	mutate(pin_ID = paste(Position_ID, Pin_number, sep = "_")) %>% # Above all transposing and repositioning dataframe.
 	ungroup() %>% # Below- adding columns, renaming variables, and reordering rows.
-	rename(Date = Start_Date, Location_ID = Location_ID.x) %>%  # rename SET reading date
+	dplyr::rename(Date = Start_Date, Location_ID = Location_ID.x) %>%  # rename SET reading date
 	group_by(pin_ID) %>% # group by pinID to 
 	mutate(EstDate = min(Date)) %>%  # create a column identifying the EstDate (date of the first SET-MH station reading)
 	arrange(Date) %>% # arrange by date
@@ -100,7 +100,10 @@ attr(SET.data.long, 'Datainfo') <-"Full SET dataset including all measures in a 
 # For others: drop only that value
 
 # Create a list of pins that have a note regarding an issue ----
-troublePins <- SET.data.long %>% ungroup() %>% select(Notes, pin_ID) %>% filter(complete.cases(.)) %>% `attr<-`("Datainfo", "List of pins that have reported issues (holes, etc)")
+troublePins <- SET.data.long %>% ungroup() %>% 
+	select(Notes, pin_ID) %>% 
+	filter(complete.cases(.)) %>% 
+	`attr<-`("Datainfo", "List of pins that have reported issues (holes, etc)")
 
 pinlistClean <- unique(troublePins$pin_ID)
 
@@ -127,7 +130,7 @@ bigIssuePins <- troublePins %>% filter(Notes %in% bigIssues)
 
 
 SET.data.cleanV3 <- SET.data.long %>% 
-	filter(!pin_ID %in% bigIssuePins$pin_ID)%>% 
+	filter(!pin_ID %in% bigIssuePins$pin_ID)%>% # Filter OUT the pins that have been recorded on a shell/hole/mussel
 	droplevels()
 
 attr(SET.data.cleanV3, 'Datainfo') <- "Any individual pin reading taken atop a hole or mussle has been dropped" # edit metadata
@@ -162,7 +165,7 @@ SA.data.long <- SA.data %>% gather('measure', 'Accretion', Measure_1:Measure_6) 
 	filter(!is.na(Accretion)) %>% 
 	select(Layer_ID, Layer_Label, Location_ID.x, Estab_Date, Start_Date, Accretion, Core_Type, Site_ID, Plot_Name, Organization) %>% 
 	mutate(DecYear = round((((as.numeric(difftime(Start_Date, Estab_Date, units = "days"))))/365),3)) %>% 
-	rename(Date = Start_Date)
+	dplyr::rename(Date = Start_Date)
 
 
 
