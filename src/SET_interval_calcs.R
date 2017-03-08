@@ -53,7 +53,7 @@ summarizeSETregressions <- function(wholeRegress){
 		group_by(Position_ID, Location_ID, Start_Date)
 }
 
-# Full SET dataset 
+# Full SET dataset ---@^* WORK NEEDED HERE---
 SET.data.Melt <- SET.data.long %>% 
 	filter(Date != '2008-08-08')
 
