@@ -26,14 +26,14 @@ load.project()
 
 # SET data analysis pulled from the ~/src folder
 ## Need to update these source scripts ####
-source('src/SurfaceElevation_rateCalc.R')
+# source('src/SurfaceElevation_rateCalc.R')  ---- Relic code
 source('src/ElevationTrends_alternativeTechnique.R') # replaces 'src/SurfaceElevation_rateCalc.R' AND 'src/SurfaceAccretion_rateCalc.R'
 
 #Surface Accretion data analysis pulled from the ~/src folder
 
 # Calculated an average accretion by plot (for each plot at each station) and a station average of those plot averages
 # As well as a mean slope (accretion rate) for each plot-station.
-source('src/SurfaceAccretion_rateCalc.R') # being replaced with above (line 27)
+# source('src/SurfaceAccretion_rateCalc.R') #  replaced with above (line 30)
 
 # Create a summary table of the sites being monitored. 
 source('src/Summaries.R')
