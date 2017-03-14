@@ -4,12 +4,6 @@
 #
 ####
 
-library(leaflet)
-library(rgdal)
-library(rgeos)
-library(sp)
-library(dplyr)
-library(htmltools)
 
 ## Shapefile Data Loading
 #
@@ -30,7 +24,7 @@ setmap <- leaflet() %>% clearBounds() %>%
 	addCircleMarkers(data = mapData, fillOpacity = 1,
 			 lng = ~X_Coord, 
 			 lat= ~Y_Coord, 
-			 color = ~pal(Mean_elevation_change), 
+			 # color = ~pal(ElevationChange_mean), 
 			 fill = TRUE, 
 			 opacity = 1, 
 			 weight = 10,
@@ -77,3 +71,4 @@ subdat<-gSimplify(subdat,tol=0.01, topologyPreserve=TRUE)
 NLM_summaryJSON <- writeOGR(NLM_summary, NLM_summary, driver="GeoJSON")
 	
 plot(NLM_summary)
+

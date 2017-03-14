@@ -7,9 +7,8 @@ output: pdf_document
 ---
 
 ```{r DocumentSetup, echo=FALSE, results='asis', message=FALSE}
-load(".Rdata")
-library(ProjectTemplate)
-load.project()
+source('MarshProject.R')
+
 ```
 
 ## Current Data and Analysis File Structure

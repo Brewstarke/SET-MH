@@ -1,26 +1,15 @@
-## 
-# Start of SET analysis <<Project>> using R Studio Project utility and ProjectTemplate package
-# 
-# ProjectTemplate provides functions to automatically build a directory structure for a new R project. Using this
-# structure, ProjectTemplate automates data loading, preprocessing, library importing and unit testing.
-# for more info see:  http://projecttemplate.net
-#
-##
 
-# for ProjectTemplate to properly run you must set the working directory to the folder 
-# that contains this script (~/SET-MH_Analysis if folder name went unchanged)
+# Marsh-SET-MH analysis
 
-#setwd("SET-MH_Analysis") 
+# This script will eventually be replaced by a .rmd notebook to consolidate 
+# and document the process of reading in data and walking through the analysis. 
+# Function similar to 'Data_methods.Rmd'
+source('libraryLoad.R')
 
-library(ProjectTemplate)
+source('data/SET_data_imports.R') # eventually migrate up a level to '1_SET_data_imports.R'
+source('munge/Data_munge.R') # eventually migrate up a level to '2_Data_munge.R'
 
-
-load.project()
-# replace projectTemplate with sourcing scripts
-source('data/SET_data_imports.R') # eventually migrate up a level
-source('munge/Data_munge.R') # eventually migrate up a level
-
-# Running the above triggers the data loading script "~/data/SET_data_imports.R"
+# Running the above runs the data loading script "~/data/SET_data_imports.R"
 # After loading the raw data, a 'munge' script "~/munge/SET_data_munge.R" runs 
 # to clean data, rename some variables and organize the structure of the data as needed.
 
