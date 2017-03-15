@@ -5,7 +5,7 @@
 # and document the process of reading in data and walking through the analysis. 
 # Function similar to 'Data_methods.Rmd'
 source('libraryLoad.R')
-
+source('helpers.R')
 source('data/SET_data_imports.R') # eventually migrate up a level to '1_SET_data_imports.R'
 source('munge/Data_munge.R') # eventually migrate up a level to '2_Data_munge.R'
 
@@ -21,14 +21,14 @@ source('munge/Data_munge.R') # eventually migrate up a level to '2_Data_munge.R'
 # source('src/SurfaceElevation_rateCalc.R')  ---- Relic code
 source('src/ElevationTrends_alternativeTechnique.R') # replaces 'src/SurfaceElevation_rateCalc.R' AND 'src/SurfaceAccretion_rateCalc.R'
 
-#Surface Accretion data analysis pulled from the ~/src folder
+# Surface Accretion data analysis pulled from the ~/src folder
 
 # Calculated an average accretion by plot (for each plot at each station) and a station average of those plot averages
 # As well as a mean slope (accretion rate) for each plot-station.
-# source('src/SurfaceAccretion_rateCalc.R') #  replaced with above (line 30)
+# source('src/SurfaceAccretion_rateCalc.R') #  replaced with above (line 22)
 
 # Create a summary table of the sites being monitored. 
-source('src/Summaries.R')
+# source('src/Summaries.R')
 
 
 # Run running regression analysis
