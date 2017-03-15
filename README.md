@@ -11,6 +11,9 @@ maps.R needs repairing.
  * create leaflet map of all sites, popup of summart stats.  
  * create static maps for reports etc. 
  
+### DB to do's:
+ - add GPS coords to AH1-3 shallow, PN1-6 shallow, HC1-3 shallow
+ 
 ###Immediate Actions:
 
 - Move towards functional programming using 
