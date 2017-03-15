@@ -18,11 +18,11 @@ accretionElevation <- function(SETdata, stationID){
 	
 	SET <- SETdata %>% 
 		filter(Plot_Name == stationID) %>% filter(SET_Type == 'Rod SET') %>% 
-		.$meanElevationRate
+		.$ElevationRate_mean
 	
 	Acc <- SA.rates %>% 
 		filter(Plot_Name == stationID) %>% 
-		.$Accretion
+		.$StationMeanAcc
 	
 	tTest <- t.test(SET, Acc, paired = FALSE)
 	tTest %<>% tidy()
