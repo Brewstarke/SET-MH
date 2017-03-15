@@ -39,7 +39,7 @@ attr(SummaryTable, "doc")  <- "Summary Table is the accumulation of SET and MH m
 
 ## Plot means Summary
 
-PlotSummaryTable <- join(y= SA.plot.means,  
+PlotSummaryTable <- left_join(y= SA.plot.means,  
 		     x= SET.station.means, 
 		     by= c("Stratafication", "Plot_Name"), 
 		     type= "left")
