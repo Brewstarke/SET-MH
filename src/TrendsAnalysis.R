@@ -34,12 +34,15 @@ accretionElevation <- function(SETdata, stationID){
 # ttest1 <- accretionElevation(a, stationID = 'BC-3')
 
 # Build dataframe from results of t-Test with translations of the processes driving the measured trends.
+# Takes accretionElevation() function to build 
 
 
 accretionElevationDF <- function(data){
+	
+	
 	tmp <- NULL # setup blank data frame
 	
-		for(i in unique(SA.data.long$Plot_Name))
+		for(i in unique(data$Plot_Name))
 			{
 			tmp1 <- accretionElevation(data, i)
 			tmp <- bind_rows(tmp, tmp1)
@@ -63,7 +66,7 @@ accretionElevationDF <- function(data){
 	dframe
 }
 
-accretionElevationA <- accretionElevationDF(a) %>% mutate(dataset = 'A')
+accretionElevationA <- accretionElevationDF(positionLevel) %>% mutate(dataset = 'A')
 accretionElevationB <- accretionElevationDF(b) %>% mutate(dataset = 'B')
 accretionElevationC <- accretionElevationDF(c) %>% mutate(dataset = 'C')
 accretionElevationD <- accretionElevationDF(d) %>% mutate(dataset = 'D')
