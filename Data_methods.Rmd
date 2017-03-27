@@ -79,7 +79,7 @@ We need to continue cleaning up the variable names and reshape the way the data 
 ```{r MungeSETVariables}
 ```
 
-By *'melting'* the SET and SA dataframes we will transpose or pivot the measurement data to allow for calculations of incremental change in accretion and elevation, the change in date and the cumulative change that has been measured. This technique relies on a split-apply-combine strategy common in data sciences. The process first groups the data by some variables and value(s). Each grouping of data is then processed through a set of functions or formulas and the results are then grouped back into the dataset to rebuild the original dataset. The grouping on the SET data is a combination of Study site, location within that study site, the direction of the SET reading arm and finally each pin.  
+By *'melting'* the SET and SA dataframes we will transpose or pivot the measurement data to allow for calculations of incremental change in accretion and elevation, the change in date and the cumulative change that has been measured. This technique relies on a split-apply-combine strategy common in data sciences. The process first groups the data by some variables and value(s). Each grouping of data is then processed through a set of functions or formulas and the results are then grouped back into the dataset to rebuild the original dataset. The grouping on the SET data is a combination of Study site, location within that study site, the direction of the SET reading arm and finally by each pin.  
 Be sure to read the comments embedded in the R code blocks as they provide some additional commentary on what's taking place in the code. 
 
 
