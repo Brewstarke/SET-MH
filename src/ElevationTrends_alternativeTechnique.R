@@ -25,21 +25,21 @@ SET_Summarize <- function(data){
 	df <- data %>% # Start with the munged and tidy dataframe (long format)
 		dplyr::group_by(Site_Name, SET_Type, Location_ID, Plot_Name, Position_ID, pin_ID) %>% # Group by the full dataset by individual pin
 		dplyr::do(tidy(lm(Raw ~ DecYear, data = .))) %>% # apply a linear regression model of pin height against time (decimal year) 
-		filter(term == 'DecYear') 
-	pinLevel <<- df 
+		filter(term == 'DecYear')
+	SETpinLevel <<- df 
 		
 	df2 <- df %>% # Summarize down to position or direction level
 		ungroup() %>% 
 		group_by(Site_Name, SET_Type, Location_ID, Plot_Name, Position_ID) %>% 
-		dplyr::summarize(meanElevationRate = mean(estimate), ElevationRate_se = stder(estimate)) 
-	positionLevel <<- df2
+		dplyr::summarize(ElevationRate_mean = mean(estimate), ElevationRate_se = stder(estimate)) 
+	SETpositionLevel <<- df2
 	
 	df3 <- df2 %>% 
 		ungroup() %>% # Summarize down to the station level.
 		group_by(Site_Name, SET_Type, Location_ID, Plot_Name) %>% 
-		dplyr::summarize(ElevationRate_mean = mean(meanElevationRate), ElevationRate_se = stder(meanElevationRate))
+		dplyr::summarize(ElevationRate_mean = mean(ElevationRate_mean), ElevationRate_se = stder(ElevationRate_mean))
 		# select(SET_ID, Location_ID, Site_Name, Stratafication, Plot_Name, SET_Type, meanElevationRate, ElevationRate_se)
-	stationLevel <- df3 
+	SETstationLevel <- df3 
 	
 	attr(df3, which = "Datainfo") <- attr(data, "Datainfo")
 	df3
@@ -79,9 +79,9 @@ SA.rates  <- SA.data.long %>%
 	rename(Location_ID = Location_ID.x) %>% 
 	select(Layer_ID, Location_ID, Date, Estab_Date, Accretion, Site_ID, Plot_Name, Organization, DecYear) %>% 
 	group_by(Layer_ID, Location_ID, Date, Estab_Date, Accretion, Site_ID, Plot_Name, Organization, DecYear) %>% 
-	summarise(plugMeanAcc = mean(Accretion), plugSEAcc = stder(Accretion)) %>% 
-	group_by(Layer_ID, Location_ID) %>% 
-	do(tidy(lm(plugMeanAcc ~ DecYear, data = .))) %>% # Uses broom package 'tidy' to clean up linear regression of mean accretion
+	# summarise(plugMeanAcc = mean(Accretion), plugSEAcc = stder(Accretion)) %>% 
+	# group_by(Layer_ID, Location_ID) %>% 
+	do(tidy(lm(Accretion ~ DecYear, data = .))) %>% # Uses broom package 'tidy' to clean up linear regression of mean accretion
 	filter(term == 'DecYear') %>% ungroup() %>% 
 	left_join(StudyStationLocations, by = 'Location_ID') %>% 
 	rename(SurfaceAccretion_plot = estimate, SurfaceAccretionSE_plot = std.error) %>% 
