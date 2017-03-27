@@ -46,16 +46,15 @@ SET_Summarize <- function(data){
 }
 
 # Run each filtered dataset through summarize funtion to learn impacts of 'issues' of pins ----
+# 
+# a <- SET_Summarize(SET.data.long) %>% mutate(dataset = "Full SET dataset including all measures in a LONG format") # "Full SET dataset including all measures in a LONG format"
+# 
+# b <- SET_Summarize(SET.data.cleanV1) %>% mutate(dataset = "Any pin with a 'history of an issue' has been dropped") # "Any pin with a 'history of an issue' has been dropped"
+# 
+# c <- SET_Summarize(SET.data.cleanV2) %>% mutate(dataset = "Any individual pin reading with a 'an issue' has been dropped") # "Any individual pin reading with a 'an issue' has been dropped"
+# 
+# d <- SET_Summarize(SET.data.cleanV3) %>% mutate(dataset = "Any pins impacted by holes or mussels dropped")# "Any individual pin reading taken atop a hole or mussle has been dropped"
 
-a <- SET_Summarize(SET.data.long) %>% mutate(dataset = "A") # "Full SET dataset including all measures in a LONG format"
-
-b <- SET_Summarize(SET.data.cleanV1) %>% mutate(dataset = "B") # "Any pin with a 'history of an issue' has been dropped"
-
-c <- SET_Summarize(SET.data.cleanV2) %>% mutate(dataset = "C") # "Any individual pin reading with a 'an issue' has been dropped"
-
-d <- SET_Summarize(SET.data.cleanV3) %>% mutate(dataset = "Any pins impacted by holes or mussels dropped")# "Any individual pin reading taken atop a hole or mussle has been dropped"
-
-CompiledSET <- a %>% bind_rows(b) %>% bind_rows(c) %>% bind_rows(d)
 
 # Using the more conservative approach- drop all pins that have had a mussel/hole issue during the readings. ----
 SET.station.Summary <- SET_Summarize(SET.data.cleanV3) %>% mutate(dataset = "Any pins impacted by holes or mussels dropped")# "Any individual pin reading taken atop a hole or mussle has been dropped"
@@ -76,15 +75,15 @@ SET.site.Summary <- SET_site_Summary(SET.station.Summary)
 
 
 SA.rates  <- SA.data.long %>% 
-	rename(Location_ID = Location_ID.x) %>% 
-	select(Layer_ID, Location_ID, Date, Estab_Date, Accretion, Site_ID, Plot_Name, Organization, DecYear) %>% 
-	group_by(Layer_ID, Location_ID, Date, Estab_Date, Accretion, Site_ID, Plot_Name, Organization, DecYear) %>% 
-	# summarise(plugMeanAcc = mean(Accretion), plugSEAcc = stder(Accretion)) %>% 
-	# group_by(Layer_ID, Location_ID) %>% 
-	do(tidy(lm(Accretion ~ DecYear, data = .))) %>% # Uses broom package 'tidy' to clean up linear regression of mean accretion
+	rename(Location_ID = Location_ID.x) %>% # rename ID field to fix join output
+	select(Layer_ID, Location_ID, Date, Estab_Date, Accretion, Site_ID, Plot_Name, Organization, DecYear) %>% # Select the columns needed
+	group_by(Layer_ID, Location_ID, Date, Estab_Date, Site_ID, Plot_Name, Organization, DecYear) %>% # group down to the plug level
+	summarise(plugMeanAcc = mean(Accretion), plugSEAcc = stder(Accretion)) %>% # find mean for each plug
+	group_by(Layer_ID, Location_ID) %>% # group to the sample station level (location ID)
+	do(tidy(lm(plugMeanAcc ~ DecYear, data = .))) %>% # Uses broom package 'tidy' to clean up linear regression of mean accretion
 	filter(term == 'DecYear') %>% ungroup() %>% 
 	left_join(StudyStationLocations, by = 'Location_ID') %>% 
-	rename(SurfaceAccretion_plot = estimate, SurfaceAccretionSE_plot = std.error) %>% 
+	rename(SurfaceAccretion_plot = estimate, SurfaceAccretionSE_plot = std.error) #%>% 
 	select(Layer_ID, Location_ID, Site_Name, Stratafication, Plot_Name, SurfaceAccretion_plot, SurfaceAccretionSE_plot) %>% 
 	ungroup() %>% 
 	group_by(Site_Name, Stratafication, Plot_Name, Location_ID) %>% 
