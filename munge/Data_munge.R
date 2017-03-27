@@ -87,7 +87,8 @@ SET.data.long <- SET.data %>%
 	mutate(Change = as.numeric(Raw) - as.numeric(Raw[1]), 
 	       incrementalChange = c(NA, diff(Change))) %>% # add column of incremental change
 	ungroup() %>% 
-	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3))
+	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3)) %>% 
+	mutate(Raw = as.numeric(Raw))
 
 attr(SET.data.long, 'Datainfo') <-"Full SET dataset including all measures in a LONG format" # give dataframe some metadata attributes
 
