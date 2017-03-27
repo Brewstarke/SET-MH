@@ -7,9 +7,12 @@ Early phase of migrating SET-MH data analysis steps into GIT for sharing and col
 
 
 ## TO DO:
-maps.R needs repairing.  
+-- maps.R needs repairing.  
  * create leaflet map of all sites, popup of summart stats.  
- * create static maps for reports etc. 
+ * create static maps for reports etc.  
+-- Summaries.R needs review. 
+	* has it been fully replaced with the 'alternativeTechniques.R' code?
+ 
  
 ### DB to do's:
  - add GPS coords to AH1-3 shallow, PN1-6 shallow, HC1-3 shallow
