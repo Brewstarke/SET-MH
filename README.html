@@ -124,28 +124,41 @@ $(document).ready(function () {
 <p>SET-MH data tool Early phase of migrating SET-MH data analysis steps into GIT for sharing and collaboration</p>
 <div id="to-do" class="section level2">
 <h2>TO DO:</h2>
-<p>– maps.R needs repairing.<br />
-* create leaflet map of all sites, popup of summart stats.<br />
-* create static maps for reports etc.<br />
-– Summaries.R needs review. * has it been fully replaced with the ‘alternativeTechniques.R’ code?</p>
+<ul>
+<li>maps.R needs repairing.
+<ul>
+<li>create leaflet map of all sites, popup of summart stats.<br />
+</li>
+<li>create static maps for reports etc.<br />
+</li>
+<li>Fix bug in /graphs/Plotting_Tool doPlot function</li>
+</ul></li>
+<li>Summaries.R needs review.
+<ul>
+<li>has it been fully replaced with the ‘alternativeTechniques.R’ code?</li>
+</ul></li>
+<li>Add functions to post tables of site and station ‘attributes’ like number of positions measured etc.Start date, last read. For use in maps and summary documents.</li>
+<li>Reshape the Shallow SET data summary to have column of shallow elevation changes, deep elevation changes and surface accretion. This will allow parsing out the unique elevation changes to each ‘part’ of the marsh.</li>
+</ul>
 <div id="db-to-dos" class="section level3">
 <h3>DB to do’s:</h3>
 <ul>
-<li>add GPS coords to AH1-3 shallow, PN1-6 shallow, HC1-3 shallow</li>
+<li><p>add GPS coords to AH1-3 shallow, PN1-6 shallow, HC1-3 shallow</p></li>
+<li><p>Clean up Locations datatable to remove NA’s</p></li>
 </ul>
 </div>
-<div id="immediate-actions" class="section level3">
-<h3>Immediate Actions:</h3>
+<div id="future-actions" class="section level3">
+<h3>Future Actions:</h3>
 <ul>
-<li>Move towards functional programming using</li>
-<li>Create a function that saves objects needed in external apps and analysis (running regression analysis)</li>
+<li>Move towards functional programming</li>
+<li><p>Create a function that saves objects needed in external apps and analysis (running regression analysis)</p></li>
+<li>Adapt the munge and ID field creation to accomodate the shallow SETs</li>
+<li>strategy 1- subset and remove shallow stations to a new dataframe</li>
+<li><p>strategy 2- modify the ID field to add one layer on top of the stations</p></li>
 </ul>
-<p>Needs: -Add cast functions to post tables of site and station ‘attributes’ like number of positions measured etc. -Reshape the Shallow SET data summary to have column of shallow elevation changes, deep elevation changes and surface accretion. This will allow parsing out the unique elevation changes to each ‘part’ of the marsh.</p>
-<p>-Fix bug in /graphs/Plotting_Tool doPlot function</p>
-<p>-Add the database file path (SET.DB.path) to the report output to allow for tracking that the correct file was pulled in.</p>
-<p>-Adapt the munge and ID field creation to accomodate the shallow SETs -strategy 1- subset and remove shallow stations to a new dataframe -strategy 2- modify the ID field to add one layer on top of the stations</p>
-<p>-Need to enter GPS coords in database -Clean up Locations datatable to remove NA’s</p>
-<p>Wishes and Ideas:</p>
+</div>
+<div id="wishes-and-ideas" class="section level3">
+<h3>Wishes and Ideas:</h3>
 <ul>
 <li>Add a warning() message that lets user know if the numbers of levels in Position_ID is not equal (!==) to Location_ID/4 asking to pick up if there’s potentially missing data from a SET arm direction (or other)</li>
 </ul>
