@@ -8,7 +8,7 @@
 # Programatic Methods Modified by Adam Starke - 
 # Specifically for use along side SET Database v. 2.94 links found in ~/data/SET_data_imports.R
 # 
-# Picks up from 'munge/Data_munge.R' to calculate trends in elevation and accretion from 'tidy' data
+# Picks up from '04_Data_munge.R' to calculate trends in elevation and accretion from 'tidy' data
 #
 
 
@@ -26,13 +26,13 @@ SET_Summarize <- function(data){
 		dplyr::group_by(Site_Name, SET_Type, Location_ID, Plot_Name, Position_ID, pin_ID) %>% # Group by the full dataset by individual pin
 		dplyr::do(tidy(lm(Raw ~ DecYear, data = .))) %>% # apply a linear regression model of pin height against time (decimal year) 
 		filter(term == 'DecYear')
-	SETpinLevel <<- df 
+	SETpinLevel <- df 
 		
 	df2 <- df %>% # Summarize down to position or direction level
 		ungroup() %>% 
 		group_by(Site_Name, SET_Type, Location_ID, Plot_Name, Position_ID) %>% 
 		dplyr::summarize(ElevationRate_mean = mean(estimate), ElevationRate_se = stder(estimate)) 
-	SETpositionLevel <<- df2
+	SETpositionLevel <- df2
 	
 	df3 <- df2 %>% 
 		ungroup() %>% # Summarize down to the station level.
