@@ -4,10 +4,10 @@
 # This script will eventually be replaced by a .rmd notebook to consolidate 
 # and document the process of reading in data and walking through the analysis. 
 # Function similar to 'Data_methods.Rmd'
-source('libraryLoad.R')
-source('helpers.R')
-source('data/SET_data_imports.R') # eventually migrate up a level to '1_SET_data_imports.R'
-source('munge/Data_munge.R') # eventually migrate up a level to '2_Data_munge.R'
+source('01_libraryLoad.R')
+source('02_helpers.R')
+source('03_SET_data_imports.R') # eventually migrate up a level to '1_SET_data_imports.R'
+source('04_Data_munge.R') # eventually migrate up a level to '2_Data_munge.R'
 
 # Running the above runs the data loading script "~/data/SET_data_imports.R"
 # After loading the raw data, a 'munge' script "~/munge/SET_data_munge.R" runs 
