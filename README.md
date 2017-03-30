@@ -7,7 +7,8 @@ Early phase of migrating SET-MH data analysis steps into GIT for sharing and col
 
 
 ## TO DO:
-- maps.R needs repairing.  
+- Insert mechanism to manage NA's in SET pin measures. Currently throwing errors in lm()functions
+- Maps.R needs repairing.  
 	* create leaflet map of all sites, popup of summart stats.  
  	* create static maps for reports etc.  
  	* Fix bug in /graphs/Plotting_Tool doPlot function
@@ -30,7 +31,7 @@ Early phase of migrating SET-MH data analysis steps into GIT for sharing and col
 - Adapt the munge and ID field creation to accomodate the shallow SETs
   - strategy 1- subset and remove shallow stations to a new dataframe
   - strategy 2- modify the ID field to add one layer on top of the stations
-
+- Explore purrr and summary generation. 
 
 ### Wishes and Ideas:
 
