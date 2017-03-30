@@ -4,12 +4,13 @@
 library(ggplot2)
 library(viridis)
 # install.packages('season')
-library(season)
+# library(season)
 library(gridExtra)
 library(tidyverse)
 
 SET.data.cleanV3 %>% 
-	ggplot(aes(x = Date, y = incrementalChange)) + 
+	filter(Site_Name == 'Hubbard Creek') %>% 
+	ggplot(aes(x = Date, y = incrementalChange, color = Arm_Direction)) + 
 	geom_point() + 
 	scale_fill_viridis(option="A") +
 	# scale_y_continuous(breaks=1:12, labels=month.abb[1:12])+
@@ -32,7 +33,7 @@ SET.data.cleanV3 %>%
 		legend.position = "bottom",
 		legend.title=element_blank()
 	) +
-	facet_wrap(~Site_Name)
+	facet_grid(SET_Type ~ Plot_Name)
 
 
 pb<-ggplot(schz, aes(year, month, fill = SczBroad)) + 
