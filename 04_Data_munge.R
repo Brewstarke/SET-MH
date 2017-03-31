@@ -7,11 +7,14 @@
 #SQL type joins to flatten the tables from the database. ----
 
 #Study Sites with Locations data --Location_ID is a numeric key analagous to Plot_Name 
-StudyStations <- left_join(Sites, Locations, by="Site_ID") # Change to a left join --@^*
-StudyStationLocations <- StudyStations %>% select(Location_ID, Site_Name, Stratafication, Plot_Name, X_Coord, Y_Coord, Coord_System, UTM_Zone, Datum, SET_Type)
+StudyStations <- left_join(Sites, Locations, by="Site_ID")  
+StudyStationLocations <- StudyStations %>% 
+	select(Location_ID, Site_Name, Stratafication, Plot_Name, X_Coord, 
+	       Y_Coord, Coord_System, UTM_Zone, Datum, SET_Type)
 
 #Surface Accretion data 
 SA <- inner_join(SA_Layers, SAccret, by="Layer_ID")
+
 
 #SET Rod data
 SET <- inner_join(SETdata, Positions, by="Position_ID")
@@ -71,8 +74,9 @@ attr(SET.data, 'Datainfo') <-"Full SET dataset including all measures in a WIDE 
 # Complete SET dataset in a LONG format ----
 SET.data.long <- SET.data %>%
 	select(Site_Name, Stratafication, Plot_Name, SET_Type, Pin1:Pin9_Notes, Arm_Direction, Location_ID.x, Position_ID, Start_Date, SET_Reader)%>% 
-	group_by(Position_ID, Start_Date) %>% 
-	gather(pin, measure, Pin1:Pin9_Notes) %>% filter(!is.na(measure)) %>% # Remvoe NA from PinX_Notes 
+	group_by(Position_ID, Start_Date) %>%
+	gather(pin, measure, Pin1:Pin9_Notes) %>% 
+	filter(!is.na(measure)) %>% # Remove NA from PinX_Notes 
 	separate(pin, c('name', 'note'), "_", remove = TRUE) %>% 
 	separate(name, c('name', 'Pin_number'), 3, remove = TRUE) %>% 
 	mutate(key = ifelse(is.na(note),yes = "Raw", no = note)) %>% 
@@ -88,7 +92,7 @@ SET.data.long <- SET.data %>%
 	       incrementalChange = c(NA, diff(Change))) %>% # add column of incremental change
 	ungroup() %>% 
 	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3)) %>% 
-	mutate(Raw = as.numeric(Raw))
+	mutate(Raw = as.numeric(Raw)) 
 
 attr(SET.data.long, 'Datainfo') <-"Full SET dataset including all measures in a LONG format" # give dataframe some metadata attributes
 
@@ -100,58 +104,25 @@ attr(SET.data.long, 'Datainfo') <-"Full SET dataset including all measures in a 
 # For holes: drop the whole timeseries
 # For others: drop only that value
 
-# Create a list of pins that have a note regarding an issue ----
-troublePins <- SET.data.long %>% ungroup() %>% 
-	select(Notes, pin_ID) %>% 
-	filter(complete.cases(.)) %>% 
-	`attr<-`("Datainfo", "List of pins that have reported issues (holes, etc)")
-
-pinlistClean <- unique(troublePins$pin_ID)
+# Create a list of pins that have a note regarding any issue at all ----
+	troublePins <- SET.data.long %>% ungroup() %>% 
+		select(Notes, pin_ID) %>% 
+		filter(complete.cases(.)) %>% # remove all pins that don't have a note.
+		`attr<-`("Datainfo", "List of pins that have reported issues (holes, etc)")
+	
+	pinlistClean <- unique(troublePins$pin_ID)
+	
+	bigIssues <- c("Hole", "hole", "mussel", "Holr", "Shell", "Mussel", "edge of hole", "hole next to mussel")
+	bigIssuePins <- troublePins %>% filter(Notes %in% bigIssues)
 
 # SET data cleaned of any pins that have an 'issue' in the timeseries- Most restrictive dataset strategy 1 from above. ----
 
 	
-SET.data.cleanV1 <- SET.data.long %>% 
-	filter(!pin_ID %in% troublePins$pin_ID) %>% 
-	droplevels()
+SET.data.long <- SET.data.long %>% 
+	mutate(toublePin = pin_ID %in% troublePins$pin_ID,
+	       bigIssuePin = pin_ID %in% bigIssuePins$pin_ID)
 
-
-attr(SET.data.cleanV1, 'Datainfo') <- "Any pin with a 'history of an issue' has been dropped" # edit metadata
-
-# SET data cleaned of any measures of a pin that had an issue ----
-SET.data.cleanV2 <- SET.data.long %>%
-	filter(is.na(Notes))%>% 
-	droplevels()
-
-attr(SET.data.cleanV2, 'Datainfo') <- "Any individual pin reading with a 'an issue' has been dropped" # edit metadata
-
-# SET data cleaned of any pins that were in a hole or on a mussel.
-bigIssues <- c("Hole", "hole", "mussel", "Holr", "Shell", "Mussel", "edge of hole", "hole next to mussel")
-bigIssuePins <- troublePins %>% filter(Notes %in% bigIssues)
-
-
-SET.data.cleanV3 <- SET.data.long %>% 
-	filter(!pin_ID %in% bigIssuePins$pin_ID)%>% # Filter OUT the pins that have been recorded on a shell/hole/mussel
-	droplevels()
-
-attr(SET.data.cleanV3, 'Datainfo') <- "Any individual pin reading taken atop a hole or mussle has been dropped" # edit metadata
-
-# Identifiers used for reshape ----
-iders <- c("SET_Type", 
-           "Position_ID", 
-           "Location_ID", 
-           "Site_Name", 
-           "Stratafication", 
-           "Plot_Name", 
-           "Start_Date",
-           "Arm_Direction", 
-           "Position_Name", 
-           "X_Coord",
-           "Y_Coord",
-           "Coord_Units",
-           "Coord_System",
-           "UTM_Zone",
-           "Datum")
+attr(SET.data.long, 'Datainfo') <- "Any pin with a 'history of an issue' has been dropped" # edit metadata
 
 
 
