@@ -6,8 +6,8 @@
 # Function similar to 'Data_methods.Rmd'
 source('01_libraryLoad.R')
 source('02_helpers.R')
-source('03_SET_data_imports.R') # eventually migrate up a level to '1_SET_data_imports.R'
-source('04_Data_munge.R') # eventually migrate up a level to '2_Data_munge.R'
+source('03_SET_data_imports.R') 
+source('04_Data_munge.R') 
 
 # Running the above runs the data loading script "~/data/SET_data_imports.R"
 # After loading the raw data, a 'munge' script "~/munge/SET_data_munge.R" runs 
@@ -19,7 +19,7 @@ source('04_Data_munge.R') # eventually migrate up a level to '2_Data_munge.R'
 # SET data analysis pulled from the ~/src folder
 ## Need to update these source scripts ####
 # source('src/SurfaceElevation_rateCalc.R')  ---- Relic code
-source('src/ElevationTrends_alternativeTechnique.R') # replaces 'src/SurfaceElevation_rateCalc.R' AND 'src/SurfaceAccretion_rateCalc.R'
+source('05_TrendsCalculations.R') # replaces 'src/SurfaceElevation_rateCalc.R' AND 'src/SurfaceAccretion_rateCalc.R'
 
 # Surface Accretion data analysis pulled from the ~/src folder
 
