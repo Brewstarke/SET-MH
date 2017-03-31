@@ -1,12 +1,8 @@
 ## Summary Tables and Plots
-library(xlsx)
-# library(reshape2)
-# library(plyr)
-library(dplyr)
-library(tidyr)
+
 
 # Site visits
-SiteVisits <- SET.data.cleanV3 %>%
+SiteVisits <- SET.data.long %>%
 	ungroup() %>%
 	group_by(Site_Name, Stratafication, SET_Type, Location_ID) %>%
 	dplyr::summarise('Sample N' = n_distinct(Date))
@@ -16,11 +12,10 @@ SummaryTable <- left_join(x = SET.station.Summary,
 		     y = SA.rates, 
 		     by= c('Location_ID', 'Site_Name', 'Plot_Name'))
 
-SummaryTable <- SummaryTable %>% ungroup() %>% 
+SummaryTables <- SummaryTable %>% ungroup() %>% 
 	left_join(SiteVisits, by= c('Location_ID', 'Site_Name', 'SET_Type')) %>% # Add site visits for n
-	left_join(StudyStationLocations %>% 
-		  	select(Location_ID, X_Coord, Y_Coord, Datum, Coord_System, UTM_Zone), by = 'Location_ID') %>% 
-	select(Site_Name, SET_Type, Plot_Name, ElevationRate_mean, ElevationRate_se, StationMeanAcc, StationAccSE, `Sample N`, X_Coord, Y_Coord, Datum, Coord_System, UTM_Zone, dataset)
+	left_join(StudyStationLocations, by = c('Location_ID', 'Site_Name', 'SET_Type')) #%>% 
+	select(Site_Name, SET_Type, ElevationRate_mean, ElevationRate_se, StationMeanAcc, StationAccSE, `Sample N`, X_Coord, Y_Coord, Datum, Coord_System, UTM_Zone, dataset)
 
 tmp <- SummaryTable %>% gather(key = 'var', value = 'vals', ElevationRate_mean:StationAccSE) %>% 
 	unite('new',SET_Type, var, sep = '_') %>% 
