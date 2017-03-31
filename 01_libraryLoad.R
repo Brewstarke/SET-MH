@@ -1,23 +1,23 @@
 ## @knitr Libraries
 
 # Data loading/munging
-library(readr)
+# library(readr)
 library(RODBC)
-library(dplyr)
-library(tidyr)
+# library(dplyr)
+# library(tidyr)
 library(tidyverse)
 library(broom)
 library(magrittr)
 library(stringr)
 library(xlsx)
 library(xts)
-library(purrr)
+# library(purrr)
 library(tidyquant)
 library(ggExtra)
 library(lubridate)
 
 # Graphics
-library(ggplot2)
+# library(ggplot2)
 library(png)
 library(RColorBrewer)
 library(colorRamps)
