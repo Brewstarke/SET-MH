@@ -130,6 +130,7 @@ Hash: d96002cc5a5865a552486c392e39f5ed
 Package: colorspace
 Source: CRAN
 Version: 1.3-2
+Hash: 0bf8618b585fa98eb23414cd3ab95118
 
 Package: colourpicker
 Source: CRAN
@@ -305,6 +306,7 @@ Requires: htmltools, jsonlite, yaml
 Package: httpuv
 Source: CRAN
 Version: 1.3.3
+Hash: 15df1efb155731a0ac9c0bfd84f13499
 Requires: Rcpp
 
 Package: httr
@@ -556,6 +558,7 @@ Requires: RColorBrewer, Rcpp, dichromat, labeling, munsell, plyr
 Package: season
 Source: CRAN
 Version: 0.3-5
+Hash: 89d96755e1d31bf1aee2b06924c351c4
 Requires: coda, ggplot2, survival
 
 Package: selectr
