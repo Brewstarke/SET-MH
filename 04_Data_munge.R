@@ -42,6 +42,8 @@ Samplings <- inner_join(Samplings, SET_readers, by = "Event_ID")
 SA.data <- inner_join(SA, Samplings, by="Event_ID")
 SET.data <- inner_join(SET, Samplings, by="Event_ID")
 
+#---------------------------------------------------------------------------------------------------------#
+
 # Remove excess dataframes leaving only SA and SET data ----
 rm(Events,
    Contacts,
@@ -59,10 +61,6 @@ rm(Events,
    )
 ## @knitr MungeSETVariables
 
-# list of Notes regarding issues with pin placement 
-# removes <- c("deer trail", 'hole', 'Hole', )
-
-
 # Complete SET data in a WIDE format ----
 # Trim excess columns and clean charcter strings.
 SET.data %<>% tbl_df() %>% 
@@ -70,6 +68,8 @@ SET.data %<>% tbl_df() %>%
 	mutate(Stratafication = capwords(as.character(Stratafication)), Start_Date = as.Date(Start_Date))     # Eventually add a filter that will filter out only 'clean' readings
 	
 attr(SET.data, 'Datainfo') <-"Full SET dataset including all measures in a WIDE format" # give dataframe some metadata attributes
+
+#---------------------------------------------------------------------------------------------------------#
 
 # Complete SET dataset in a LONG format ----
 SET.data.long <- SET.data %>%
@@ -81,21 +81,19 @@ SET.data.long <- SET.data %>%
 	separate(name, c('name', 'Pin_number'), 3, remove = TRUE) %>% 
 	mutate(key = ifelse(is.na(note),yes = "Raw", no = note)) %>% 
 	select(-note, -name) %>% 
-	spread(key, measure) %>% 
+	spread(key, measure) %>%
 	mutate(pin_ID = paste(Position_ID, Pin_number, sep = "_")) %>% # Above all transposing and repositioning dataframe.
 	ungroup() %>% # Below- adding columns, renaming variables, and reordering rows.
 	dplyr::rename(Date = Start_Date, Location_ID = Location_ID.x) %>%  # rename SET reading date
 	group_by(pin_ID) %>% # group by pinID to 
 	mutate(EstDate = min(Date)) %>%  # create a column identifying the EstDate (date of the first SET-MH station reading)
-	arrange(Date) %>% # arrange by date
-	mutate(Change = as.numeric(Raw) - as.numeric(Raw[1]), 
-	       incrementalChange = c(NA, diff(Change))) %>% # add column of incremental change
 	ungroup() %>% 
 	mutate(DecYear = round((((as.numeric(difftime(.$Date, .$EstDate, units = "days"))))/365),3)) %>% 
 	mutate(Raw = as.numeric(Raw)) 
 
 attr(SET.data.long, 'Datainfo') <-"Full SET dataset including all measures in a LONG format" # give dataframe some metadata attributes
 
+#---------------------------------------------------------------------------------------------------------#
 
 # Clean outliers and 'issues' at time of reading ----
 # Two strategies- 1) drop complete time series for a pin that has an 'issue' at any one point in the series, 
@@ -104,24 +102,31 @@ attr(SET.data.long, 'Datainfo') <-"Full SET dataset including all measures in a 
 # For holes: drop the whole timeseries
 # For others: drop only that value
 
-# Create a list of pins that have a note regarding any issue at all ----
-	troublePins <- SET.data.long %>% ungroup() %>% 
-		select(Notes, pin_ID) %>% 
-		filter(complete.cases(.)) %>% # remove all pins that don't have a note.
-		`attr<-`("Datainfo", "List of pins that have reported issues (holes, etc)")
-	
-	pinlistClean <- unique(troublePins$pin_ID)
-	
-	bigIssues <- c("Hole", "hole", "mussel", "Holr", "Shell", "Mussel", "edge of hole", "hole next to mussel")
-	bigIssuePins <- troublePins %>% filter(Notes %in% bigIssues)
+	# Create a list of pins that have a note regarding any issue at all ----
+		troublePins <- SET.data.long %>% ungroup() %>% 
+			select(Notes, pin_ID) %>% 
+			filter(complete.cases(.)) %>% # remove all pins that don't have a note.
+			`attr<-`("Datainfo", "List of pins that have reported issues (holes, etc)")
+		
+		pinlistClean <- unique(troublePins$pin_ID)
+		
+		bigIssues <- c("Hole", "hole", "mussel", "Holr", "Shell", "Mussel", "edge of hole", "hole next to mussel")
+		bigIssuePins <- troublePins %>% filter(Notes %in% bigIssues)
 
+#---------------------------------------------------------------------------------------------------------#
+	
 # SET data cleaned of any pins that have an 'issue' in the timeseries- Most restrictive dataset strategy 1 from above. ----
+		# Use this as the default dataset for ALL analysis moving forward.
 
 	
-SET.data.long <- SET.data.long %>% 
-	mutate(toublePin = pin_ID %in% troublePins$pin_ID,
-	       bigIssuePin = pin_ID %in% bigIssuePins$pin_ID)
-
+SET.data.long <- SET.data.long %>%
+		mutate(bigIssuePin = pin_ID %in% bigIssuePins$pin_ID) %>% # Add in a column indicating if that pin is on the list of issues
+		filter(bigIssuePin == FALSE) %>% 
+		group_by(pin_ID) %>% # reinforce that the grouping is based on pins
+		arrange(Date) %>% 
+		mutate(Change = as.numeric(Raw) - as.numeric(Raw[1]), 
+		       incrementalChange = c(NA, diff(Change))) 
+	
 attr(SET.data.long, 'Datainfo') <- "Any pin with a 'history of an issue' has been dropped" # edit metadata
 
 
@@ -133,7 +138,8 @@ attr(SET.data.long, 'Datainfo') <- "Any pin with a 'history of an issue' has bee
 #Clean up SA.data dataframe and reshape; same as above but working on surface accretion data
 # similar steps as SET.data
 
-SA.data.long <- SA.data %>% gather('measure', 'Accretion', Measure_1:Measure_6) %>% 
+SA.data.long <- SA.data %>% 
+	gather('measure', 'Accretion', Measure_1:Measure_6) %>% 
 	filter(!is.na(Accretion)) %>% 
 	select(Layer_ID, Layer_Label, Location_ID.x, Estab_Date, Start_Date, Accretion, Core_Type, Site_ID, Plot_Name, Organization) %>% 
 	mutate(DecYear = round((((as.numeric(difftime(Start_Date, Estab_Date, units = "days"))))/365),3)) %>% 
@@ -143,5 +149,5 @@ SA.data.long <- SA.data %>% gather('measure', 'Accretion', Measure_1:Measure_6) 
 
 
 
-### All clear to hear-- 07Mar2014- AFS -----
+### All clear to hear-- 03Apr2017- AFS -----
 
