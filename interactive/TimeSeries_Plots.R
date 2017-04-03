@@ -11,18 +11,18 @@ SET.data.long <- tbl_df(SET.data.long)
 
 PinMeans <- SET.data.long %>%
 	group_by(Location_ID, Position_ID, Site_Name, Plot_Name, Date) %>%
-	dplyr::summarise(mean = mean(change))
+	dplyr::summarise(mean = mean(Raw))
 
 DirectionMeans <- PinMeans %>%
-	group_by(Location_ID, Site_Name, Plot_Name, Start_Date) %>%
+	group_by(Location_ID, Site_Name, Plot_Name, Date) %>%
 	dplyr::summarise(mean = mean(mean))
 
 StationMeans <- DirectionMeans %>%
-	group_by(Site_Name, Plot_Name, Start_Date) %>%
+	group_by(Site_Name, Plot_Name, Date) %>%
 	dplyr::summarise(mean = mean(mean))
 
 SiteMeans <- StationMeans %>%
-	group_by(Site_Name, Start_Date) %>%
+	group_by(Site_Name, Date) %>%
 	dplyr::summarise(SiteMean = mean(mean))	  
 
 # To make an xts class object from a dataframe you need to either drop the rownames or rename the first coloumn as the timestamps.
@@ -31,14 +31,14 @@ SiteMeans <- StationMeans %>%
 SET_SiteMeans <- SiteMeans %>% 
 	spread(Site_Name, value = SiteMean)
 
-SET_SiteMeans_xts <- as.xts(SET_SiteMeans, order.by = SET_SiteMeans$Start_Date)
+SET_SiteMeans_xts <- as.xts(SET_SiteMeans, order.by = SET_SiteMeans$Date)
 
 
 str(SET_SiteMeans_xts)
 
 
 
-dygraph(SET.data.long.xts, 
+dygraph(SET_SiteMeans_xts, 
 	main = "Average Marsh Surface Elevation Changes Across Long Island", 
 	ylab = "Elevation (mm)") %>%
 	dyOptions(drawPoints = TRUE,
