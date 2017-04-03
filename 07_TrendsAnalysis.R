@@ -1,7 +1,7 @@
 # Trends analysis 
 # Based on the SOP provided by NPS/USGS/NOAA
 
-# Question 1: Is accretion trend equal to elevation trend?
+# Question 3: Is accretion trend equal to elevation trend?
 # Paired t-Test across stations.
 
 # Create funciton that takes a SET station and outputs the paired T-test result
@@ -66,10 +66,8 @@ accretionElevationDF <- function(data){
 	dframe
 }
 
-accretionElevationA <- accretionElevationDF(positionLevel) %>% mutate(dataset = 'A')
-accretionElevationB <- accretionElevationDF(b) %>% mutate(dataset = 'B')
-accretionElevationC <- accretionElevationDF(c) %>% mutate(dataset = 'C')
-accretionElevationD <- accretionElevationDF(d) %>% mutate(dataset = 'D')
+accretionElevation <- accretionElevationDF(SET.station.Trends.summary) 
+
 
 # Plot comparing different input datasets
 comparisons <- accretionElevationA %>% 
