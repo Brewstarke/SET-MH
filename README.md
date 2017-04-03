@@ -16,7 +16,11 @@ Early phase of migrating SET-MH data analysis steps into GIT for sharing and col
 	* has it been fully replaced with the 'alternativeTechniques.R' code?
 - Add functions to post tables of site and station 'attributes' like number of positions measured etc.Start date, last read. For use in maps and summary documents.
 - Reshape the Shallow SET data summary to have column of shallow elevation changes, deep elevation changes and surface accretion. This will allow parsing out the unique elevation changes to each 'part' of the marsh.
-
+- Add summary of sampling data in .Rmd. 
+	* Number of sampling dates, to date
+	* Lenght of data series
+	* Average interval between readings
+	* Last reading
  
 ### DB to do's:
  - add GPS coords to AH1-3 shallow, PN1-6 shallow, HC1-3 shallow
