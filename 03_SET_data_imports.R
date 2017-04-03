@@ -7,10 +7,9 @@
 #
 ###
 
-library(RODBC)
-
-SET.DB.path <- "T:/Coastal/Marsh-Wetlands/SET-MH_project/SET_Data/SET_Monitoring_Database/Database_storage/SET_DB_BE_ver_2.94_TNC_Master.mdb"
-
+# C:\Users\astarke\Desktop\Box Sync\SET_Project\SET_DatabaseStorage\Database_storage
+# SET.DB.path <- file.choose() #"C:/Users/astarke/Desktop/Box Sync/Box Sync/SET_Project/SET_DatabaseStorage/Database_storage/SET_DB_BE_ver_2.94_TNC_Master.mdb"
+SET.DB.path <- choose.files(caption = "Select SET-MH Database storage file (back-end file for Access)", multi = FALSE)
 
 SET.DB <- odbcConnectAccess2007(SET.DB.path)
 
