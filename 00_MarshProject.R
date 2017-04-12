@@ -28,7 +28,7 @@ source('05_TrendsCalculations.R') # replaces 'src/SurfaceElevation_rateCalc.R' A
 # source('src/SurfaceAccretion_rateCalc.R') #  replaced with above (line 22)
 
 # Create a summary table of the sites being monitored. 
-# source('src/Summaries.R')
+source('06_Summaries.R')
 
 
 # Run running regression analysis

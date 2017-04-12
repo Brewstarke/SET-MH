@@ -1,13 +1,53 @@
 ---
-title: Surface Elevation Table- Marker Horizon (SET-MH) Data Handling and Analaysis
-  in R
+title: Surface Elevation Table- Marker Horizon (SET-MH) Data Handling and Analaysis in R
 author: "Adam Starke"
 subtitle: The Nature Conservancy - Long Island Chapter
-output: pdf_document
+output: html_notebook
+	pdf_document
 ---
 
-```{r DocumentSetup, echo=FALSE, results='asis', message=FALSE}
-source('MarshProject.R')
+```{r DocumentSetup, message=TRUE, include=FALSE, results='asis'}
+## @knitr Libraries
+
+# Data loading/munging
+# library(readr)
+library(RODBC)
+# library(dplyr)
+# library(tidyr)
+library(tidyverse)
+library(broom)
+library(magrittr)
+library(stringr)
+library(xlsx)
+library(xts)
+# library(purrr)
+library(tidyquant)
+library(ggExtra)
+library(lubridate)
+
+# Graphics
+# library(ggplot2)
+library(png)
+library(RColorBrewer)
+library(colorRamps)
+library(ggthemes)
+library(dygraphs)
+library(xtable)
+library(rmarkdown)
+library(tufte)
+library(tint)
+library(taucharts)
+
+
+# Spatial packages
+library(leaflet)
+library(rgdal)
+library(rgeos)
+library(sp)
+library(spatial)
+library(maptools)
+
+library(htmltools)
 
 ```
 

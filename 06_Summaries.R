@@ -42,7 +42,7 @@ tmp <- SummaryTable %>%
 
 	
 # --------------------------------------------------------------------------------------------
-SummaryTable$SubSurface_change <- SummaryTable$ElevationRate_mean - SummaryTable$StationMeanAcc
+SummaryTable$SubSurface_change <- SummaryTable$meanElevationRate - SummaryTable$StationMeanAcc
 
 attr(SummaryTable, "doc")  <- "Summary Table is the accumulation of SET and MH mean rates and associated SE's. 
 				SubSurface_change: mean elevation change - mean accretion rate
