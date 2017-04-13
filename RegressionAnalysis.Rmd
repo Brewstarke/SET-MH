@@ -1,14 +1,15 @@
 ---
-title: "Regression Analysis"
-author: "Adam Starke"
-date: "October 13, 2015"
-output: html_document
-runtime: shiny
+title: "Regression Analysis" 
+author: "Adam Starke" 
+date: "October 13, 2015" 
+runtime: shiny 
+output: html_document  
 ---
 The following is a preliminary examination of the elevation trends as measured using the SET-MH technique.
 
 
 ```{r mainBody, echo=FALSE, error=FALSE, fig.align='center', fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 library(shiny)
 library(ggvis)
 library(xtable)
