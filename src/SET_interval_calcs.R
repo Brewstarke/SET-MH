@@ -9,25 +9,22 @@ library(dplyr)
 
 compileSETregressions <- function(wholeData){
 	
-	runningRegressionSETs <- function(SETdata){
-		###
-		# Creates a beta value (slope) and SE of the beta for each increment in a running/incremental/additive manner
-		# 
-		
-		data <-  SETdata
-		# 	create a list of unique positions and pins.
-		# 	pins <- unique(data$variable)
-		# 	positions <- unique(data$Position_ID)
-		ts_length <- length(data$Date)
-		data$beta = rep(NA, ts_length)
-		data$SE_beta = rep(NA, ts_length)
-		for(i in 2:ts_length) {
-			regress <- lm(Change ~ DecYear, data = data[1:i,])
-			data$beta[i] <- coef(regress)[2]
-			data$SE_beta[i] <- summary(regress)$coef[4]
+		runningRegressionSETs <- function(SETdata){
+			###
+			# Creates a beta value (slope) and SE of the beta for each increment in a running/incremental/additive manner
+			# 
+			ts_length <- length(SETdata$Date)
+			SETdata$beta = rep(NA, ts_length)
+			SETdata$SE_beta = rep(NA, ts_length)
+			SETdata$Rsquare = rep(NA, ts_length)
+			for(i in 2:ts_length) {
+				regress <- lm(Change ~ DecYear, data = SETdata[1:i,])
+				SETdata$beta[i] <- coef(regress)[2]
+				SETdata$SE_beta[i] <- summary(regress)$coef[4]
+				SETdata$Rsquare[i] <- summary(regress)$r.square
+			}
+			SETdata
 		}
-		data
-	}
 	##
 	# Brings in the entire SET data set in long format, subsets the data down to the pin level and
 	# fits a regression line (beta) and SE of the regression (SE_beta) for each pin through time.
@@ -35,6 +32,7 @@ compileSETregressions <- function(wholeData){
 	temp <- wholeData # set input data as a temp dataframe
 	temp$uniqueIDer <- paste(temp$Position_ID, temp$Pin_number) # Create a unique id for running the runningRegressionSETs() function over...
 	subsetsUnique <- unique(temp$uniqueIDer)
+	
 	z <- data.frame() # make empty dataframe to store results
 	
 	for (i in 1:length(subsetsUnique)){
@@ -57,7 +55,7 @@ summarizeSETregressions <- function(wholeRegress){
 
 # Full SET dataset ---@^* WORK NEEDED HERE---
 SET.data.Melt <- SET.data.long %>% 
-	filter(Date != '2008-08-08') %>% as.data.frame()
+	filter(Date != '2008-08-08', Site_Name != 'Frost Creek') %>% as.data.frame()
 
 regressionsSET <- compileSETregressions(SET.data.Melt)
 

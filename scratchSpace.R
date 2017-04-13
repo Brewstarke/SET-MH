@@ -8,7 +8,7 @@ library(viridis)
 library(gridExtra)
 library(tidyverse)
 
-SET.data.cleanV3 %>% 
+SET.data.long %>% 
 	filter(Site_Name == 'Hubbard Creek') %>% 
 	ggplot(aes(x = Date, y = incrementalChange, color = Arm_Direction)) + 
 	geom_point() + 
@@ -109,3 +109,18 @@ pd<-ggplot(schz, aes(year, month, fill = SczBroad)) +
 		legend.position = "bottom",
 		legend.title=element_blank()
 	)
+
+# ---------------------------------------------------------------------------------------------------------------------
+# R-square plot to investigate 
+# 
+
+regressionsSET %>% 
+	filter(SET_Type == 'Rod SET') %>% 
+	ggplot(aes(x = Date, y = Rsquare)) + 
+	geom_point(size = 0.2) + 
+	theme_bw() +
+	facet_grid(Site_Name ~ Arm_Direction)
+
+
+
+
